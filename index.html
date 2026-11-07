@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal do Ativo Imobilizado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Domine:wght@500;700&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: cabeçalho fixo com abas de seções; cada seção é uma "pasta" do patrimônio, com cartões só onde há objeto próprio */
+:root{
+  --bg:#F5F3EE; --surface:#FFFFFF; --surface2:#ECE8DE; --line:#DCD5C6;
+  --fg:#1B2A47; --muted:#55607A; --accent:#8E5F10; --accent2:#E3B55B;
+  --navy:#1B2A47; --onnavy:#F6F2E9;
+  --ok:#2F6B3A; --okbg:#E3EFE1; --warn:#9C5700; --warnbg:#FBEFD6; --bad:#A63D2A; --badbg:#F7E3DD; --info:#2B5C9E; --infobg:#E3ECF7;
+  --font-display:'Domine', Georgia, serif; --font-body:'Nunito Sans', 'Segoe UI', Arial, sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121A2B; --surface:#1A2438; --surface2:#222E46; --line:#2F3C57;
+  --fg:#EEF0F5; --muted:#A9B3C7; --accent:#E3B55B; --accent2:#E3B55B;
+  --navy:#0C1322; --onnavy:#F6F2E9;
+  --ok:#8FCB97; --okbg:#1E3326; --warn:#F2C26B; --warnbg:#3A2E15; --bad:#F09A86; --badbg:#3D2320; --info:#9DBFF0; --infobg:#1E2E4A;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121A2B; --surface:#1A2438; --surface2:#222E46; --line:#2F3C57;
+  --fg:#EEF0F5; --muted:#A9B3C7; --accent:#E3B55B; --accent2:#E3B55B;
+  --navy:#0C1322; --onnavy:#F6F2E9;
+  --ok:#8FCB97; --okbg:#1E3326; --warn:#F2C26B; --warnbg:#3A2E15; --bad:#F09A86; --badbg:#3D2320; --info:#9DBFF0; --infobg:#1E2E4A;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);color:var(--onnavy);box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.top .row1{display:flex;align-items:center;gap:16px;padding-block:12px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.2;min-width:0;flex:1}
+.brand b{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:.2px}
+.brand span{font-size:12px;color:#C9D1E0;letter-spacing:.6px;text-transform:uppercase}
+.search{position:relative;flex:0 1 380px;min-width:0;width:100%}
+.search input{width:100%;padding:10px 14px 10px 38px;border-radius:999px;border:1px solid #3A4A6B;background:#24345A;color:#F6F2E9;font:inherit;font-size:15px}
+.search input::placeholder{color:#AEB8CC}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:none;stroke:#C9D1E0;stroke-width:2}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{flex:none;color:#D9DEE8;text-decoration:none;padding:8px 14px;border-radius:10px;font-weight:700;font-size:15px;white-space:nowrap}
+nav.tabs a:hover{background:#24345A}
+nav.tabs a[aria-current="page"]{background:var(--accent2);color:#1B2A47}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+main{padding-block:28px 64px}
+section.view{display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:clamp(28px,4vw,40px)} h2{font-size:clamp(22px,3vw,28px)} h3{font-size:19px}
+p{margin:0}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent)}
+.lead{font-size:18px;color:var(--muted);max-width:68ch}
+.muted{color:var(--muted)}
+.head{display:flex;flex-direction:column;gap:8px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.link{cursor:pointer;text-decoration:none;color:inherit;transition:border-color .15s, transform .15s}
+.card.link:hover{border-color:var(--accent)}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .v{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi .l{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.kpi .s{font-size:13px;color:var(--muted)}
+.band{background:var(--navy);color:var(--onnavy);border-radius:var(--r);padding:24px;display:flex;flex-direction:column;gap:10px}
+.band .eyebrow{color:var(--accent2)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap;letter-spacing:.3px}
+.p-ok{background:var(--okbg);color:var(--ok)} .p-warn{background:var(--warnbg);color:var(--warn)} .p-bad{background:var(--badbg);color:var(--bad)} .p-info{background:var(--infobg);color:var(--info)} .p-mut{background:var(--surface2);color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--navy);color:var(--onnavy);border-color:var(--navy)}
+:root[data-theme="dark"] .btn.primary{background:var(--accent2);color:#1B2A47;border-color:var(--accent2)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{background:var(--accent2);color:#1B2A47;border-color:var(--accent2)}}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:var(--surface2);position:sticky;top:0;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;white-space:nowrap}
+tbody tr.click{cursor:pointer} tbody tr.click:hover td{background:var(--surface2)}
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.steps li::before{content:counter(s);width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--onnavy);display:grid;place-items:center;font-weight:800;font-size:17px}
+:root[data-theme="dark"] .steps li::before{background:var(--accent2);color:#1B2A47}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .steps li::before{background:var(--accent2);color:#1B2A47}}
+.steps li b{display:block;font-size:17px;margin-bottom:2px}
+.quote{font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--accent);max-width:70ch}
+.formcard{display:flex;flex-direction:column;gap:12px}
+.formcard .thumb{aspect-ratio:210/297;max-width:100%;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.formcard .thumb img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.formcard .code{font-family:var(--font-display);font-size:22px;font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);color:var(--onnavy);border-color:var(--navy)}
+input.f,select.f,textarea.f{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);font:inherit;font-size:15px}
+label.fl{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;color:var(--muted);min-width:0}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(0,190px) 1fr auto;gap:10px;align-items:center;font-size:14px}
+.bar .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .t{height:14px;background:var(--surface2);border-radius:7px;overflow:hidden}
+.bar .t i{display:block;height:100%;background:var(--info);border-radius:7px}
+.bar .t i.gold{background:var(--accent)}
+.bar .t i.ok{background:var(--ok)}
+.bar .v{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap;min-width:84px;text-align:right}
+.progress{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;min-width:70px}
+.progress i{display:block;height:100%;background:var(--ok)}
+.overlay{position:fixed;inset:0;background:rgba(10,15,28,.6);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.modal{background:var(--surface);color:var(--fg);border-radius:var(--r);width:min(900px,100%);display:flex;flex-direction:column;max-width:100%}
+.modal .mh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);border-radius:var(--r) var(--r) 0 0;flex-wrap:wrap}
+.modal .mb{padding:20px;display:flex;flex-direction:column;gap:16px}
+.modal img.page{width:100%;border:1px solid var(--line);border-radius:6px;background:#fff}
+.hit{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.hit:hover{border-color:var(--accent)}
+.hit .where{font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.6px}
+mark{background:var(--accent2);color:#1B2A47;border-radius:3px;padding:0 2px}
+.notice{border:1px dashed var(--accent);background:var(--warnbg);color:var(--fg);border-radius:var(--r);padding:16px 18px}
+.split{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.split{grid-template-columns:1fr}}
+.pagelist{display:flex;flex-direction:column;gap:6px;max-height:70vh;overflow:auto}
+.pagelist button{text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer}
+.pagelist button[aria-current="true"]{border-color:var(--accent);background:var(--surface2);font-weight:700}
+.pagetext{white-space:pre-wrap;font-size:14px;background:var(--surface2);border-radius:10px;padding:14px;max-height:360px;overflow:auto}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--navy);color:var(--onnavy);padding:10px 18px;border-radius:999px;font-weight:700;z-index:60}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--c)}
+.small{font-size:13px}
+
+.deck{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+@media (max-width:900px){.deck{grid-template-columns:1fr}}
+.stage{background:#0E1626;border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.stage img{width:100%;aspect-ratio:16/9;object-fit:contain;display:block;background:#0E1626}
+.stagebar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;color:#D9DEE8;flex-wrap:wrap}
+.stagebar .btn{background:#24345A;color:#F6F2E9;border-color:#3A4A6B}
+.thumbs{display:flex;flex-direction:column;gap:10px;max-height:72vh;overflow:auto;padding-right:4px}
+.thumbs button{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px;font:inherit;font-size:13px;cursor:pointer}
+.thumbs button img{width:96px;aspect-ratio:16/9;object-fit:cover;border-radius:4px;display:block}
+.thumbs button[aria-current="true"]{border-color:var(--accent);background:var(--surface2);font-weight:700}
+.thumbs .sec{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--accent);padding:6px 2px 0}
+.notes{white-space:pre-wrap;font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.present{position:fixed;inset:0;z-index:70;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.present img{max-width:100%;max-height:calc(100% - 56px);object-fit:contain}
+.present .pbar{display:flex;gap:10px;align-items:center;color:#C9D1E0;padding:10px;font-size:14px}
+.present .pbar .btn{background:#1B2A47;color:#F6F2E9;border-color:#3A4A6B;padding:6px 12px}
+@media (max-width:600px){.brand span{display:none}.top .row1{padding-block:8px;gap:8px}.brand b{font-size:17px}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap row1">
+    <div class="brand"><b>Portal do Ativo Imobilizado</b><span>Patrimônio – Bens Móveis • Manual Administrativo, Seção 14</span></div>
+    <div class="search" role="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Buscar no manual, formulários e instruções…" aria-label="Buscar no portal" autocomplete="off">
+    </div>
+  </div>
+  <nav class="wrap tabs" aria-label="Seções">
+    <a href="#inicio" data-v="inicio">Início</a>
+    <a href="#materiais" data-v="materiais">Materiais</a>
+    <a href="#apresentacao" data-v="apresentacao">Apresentação</a>
+    <a href="#manual" data-v="manual">Manual</a>
+    <a href="#formularios" data-v="formularios">Formulários</a>
+    <a href="#planilha" data-v="planilha">Planilha de inventário</a>
+    <a href="#inventario" data-v="inventario">Inventário</a>
+    <a href="#cronograma" data-v="cronograma">Cronograma</a>
+    <a href="#dashboard" data-v="dashboard">Dashboard</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+<!-- ===================== INÍCIO ===================== -->
+<section class="view" id="v-inicio">
+  <div class="head">
+    <p class="eyebrow">Patrimônio – Bens Móveis</p>
+    <h1>Tudo do patrimônio em um só lugar</h1>
+    <p class="lead">Manual, formulários, planilha de inventário, cronograma e indicadores. Os números de cada Administração são carregados pelo próprio usuário, a partir do relatório do SIGA, e só ele vê.</p>
+  </div>
+  <div class="grid g4" id="home-kpis"></div>
+  <div class="band">
+    <p class="eyebrow">Novidade nos formulários</p>
+    <h2 style="color:var(--onnavy)">O Formulário 14.1 foi substituído pelo FOR.AI.01</h2>
+    <p style="color:#D9DEE8;max-width:75ch">Doações de bens móveis <b>e materiais</b> agora usam o FOR.AI.01 (REV00), junto com o 14.2. Divergências do inventário passam a ser registradas no FOR.AI.02 (REV01), com os códigos 01 a 04.</p>
+    <div class="row"><a class="btn" href="#formularios" style="background:var(--accent2);color:#1B2A47;border-color:var(--accent2)">Ver os formulários</a></div>
+  </div>
+  <div class="grid g4">
+    <a class="card link" href="#materiais"><p class="eyebrow">Para baixar</p><h3>Materiais do treinamento</h3><p class="muted">Resumo em checklist, guia de preenchimento, apresentação, Manual e planilha modelo.</p></a>
+    <a class="card link" href="#apresentacao"><p class="eyebrow">Treinamento</p><h3>Apresentação</h3><p class="muted">Os 44 slides do treinamento do Manual 14, com notas do apresentador e modo tela cheia.</p></a>
+    <a class="card link" href="#manual"><p class="eyebrow">Consulta</p><h3>Manual – Seção 14</h3><p class="muted">Leia por página e busque qualquer termo: doação, baixa, etiqueta, depreciação…</p></a>
+    <a class="card link" href="#formularios"><p class="eyebrow">Anexos</p><h3>Formulários</h3><p class="muted">FOR.AI.01, FOR.AI.02 e 14.2 a 14.9 para visualizar e baixar, com quando usar cada um.</p></a>
+    <a class="card link" href="#planilha"><p class="eyebrow">Passo a passo</p><h3>Planilha de inventário</h3><p class="muted">Como colar o relatório do SIGA, marcar o status de cada bem e fechar o FOR.AI.02.</p></a>
+    <a class="card link" href="#inventario"><p class="eyebrow">Conferência</p><h3>Inventário da igreja</h3><p class="muted">Digite o código da igreja, veja todos os bens e marque encontrado, sem etiqueta, não encontrado… inclusive pelo celular.</p></a>
+    <a class="card link" href="#cronograma"><p class="eyebrow">Acompanhamento</p><h3>Cronograma</h3><p class="muted">Carregue o relatório do SIGA e acompanhe datas, responsáveis e andamento das suas localidades.</p></a>
+    <a class="card link" href="#dashboard"><p class="eyebrow">Indicadores</p><h3>Dashboard por localidade</h3><p class="muted">Bens, valor atual, depreciação, dependências e progresso do inventário.</p></a>
+  </div>
+  <p class="quote">“Mas faça-se tudo decentemente e com ordem.” – 1 Coríntios 14:40</p>
+</section>
+
+<!-- ===================== MATERIAIS ===================== -->
+<section class="view" id="v-materiais" hidden>
+  <div class="head">
+    <p class="eyebrow">Para baixar e imprimir</p>
+    <h1>Materiais do treinamento</h1>
+    <p class="lead">Tudo o que foi entregue impresso no treinamento, para baixar quando precisar. Os formulários avulsos ficam na aba Formulários.</p>
+  </div>
+  <div class="grid g3" id="mat-grid"></div>
+  <div class="card" id="mat-planilha">
+    <div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div style="min-width:0;flex:1 1 320px;display:flex;flex-direction:column;gap:6px">
+        <p class="eyebrow">Excel</p>
+        <h3>Planilha modelo de inventário (SIGA)</h3>
+        <p class="muted">Cole o relatório do SIGA na aba COLAR_SIGA e a planilha monta o inventário, as etiquetas, o FOR.AI.02, o cronograma e o dashboard. Instruções na aba Planilha de inventário.</p>
+        <p class="small muted" id="mat-plan-msg"></p>
+      </div>
+      <div class="row" id="mat-plan-act"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== APRESENTAÇÃO ===================== -->
+<section class="view" id="v-apresentacao" hidden>
+  <div class="head">
+    <p class="eyebrow">Treinamento regional • 2h30</p>
+    <h1>Apresentação – Patrimônio Bens Móveis</h1>
+    <p class="lead">Os 44 slides do treinamento, com as notas do apresentador. Use as setas do teclado para avançar e o botão “Apresentar” para tela cheia.</p>
+  </div>
+  <div class="deck">
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <div class="stage">
+        <img id="sl-img" alt="">
+        <div class="stagebar">
+          <div class="row" style="gap:8px"><button class="btn" type="button" id="sl-prev">‹ Anterior</button><button class="btn" type="button" id="sl-next">Próximo ›</button></div>
+          <span id="sl-count" style="font-variant-numeric:tabular-nums;font-weight:700"></span>
+          <div class="row" style="gap:8px"><button class="btn" type="button" id="sl-notes-t" aria-pressed="true">Ocultar notas</button><button class="btn" type="button" id="sl-pdf">Baixar PDF</button><button class="btn" type="button" id="sl-present" style="background:var(--accent2);color:#1B2A47;border-color:var(--accent2)">Apresentar</button></div>
+        </div>
+      </div>
+      <div class="notes" id="sl-notes"></div>
+    </div>
+    <div class="thumbs" id="sl-thumbs" aria-label="Slides"></div>
+  </div>
+</section>
+
+<!-- ===================== MANUAL ===================== -->
+<section class="view" id="v-manual" hidden>
+  <div class="head">
+    <p class="eyebrow">Manual Administrativo</p>
+    <h1>Seção 14 – Patrimônio – Bens Móveis</h1>
+    <p class="lead">Escolha a página na lista ou digite um termo. As páginas com o termo ficam destacadas.</p>
+  </div>
+  <div id="manual-box"></div>
+</section>
+
+<!-- ===================== FORMULÁRIOS ===================== -->
+<section class="view" id="v-formularios" hidden>
+  <div class="head">
+    <p class="eyebrow">Anexos da Seção 14</p>
+    <h1>Formulários</h1>
+    <p class="lead">Clique no formulário para ver todas as páginas e baixar o PDF. Os arquivos Word editáveis ficam na pasta do Treinamento Regional. Os modelos estão em branco, prontos para imprimir e preencher.</p>
+  </div>
+  <div class="row"><button type="button" class="btn primary" id="forms-all">Baixar todos os formulários em um PDF</button><span class="small muted">FOR.AI.01, FOR.AI.02 e 14.2 a 14.9 (13 páginas). O 14.1 não está incluído, pois foi substituído.</span></div>
+  <div class="notice small"><b>Documento interno.</b> Os formulários FOR.AI são de uso exclusivo da Congregação Cristã no Brasil. Compartilhe este portal somente com os colaboradores autorizados.</div>
+  <div class="grid g4" id="forms-grid"></div>
+  <div class="card">
+    <h3>Qual formulário usar?</h3>
+    <div class="tablewrap" style="border:none"><table>
+      <thead><tr><th>Situação</th><th>Formulário</th></tr></thead>
+      <tbody>
+        <tr><td>Compra de um bem (nota fiscal com localidade e dependência)</td><td>14.2</td></tr>
+        <tr><td>Doação de bem móvel ou de materiais</td><td><b>FOR.AI.01</b> + 14.2</td></tr>
+        <tr><td>Transferência recebida de outra localidade</td><td>14.2 (destino) + 14.3 (origem)</td></tr>
+        <tr><td>Saída: transferência, venda, crime, perda/extravio, obsolescência</td><td>14.3</td></tr>
+        <tr><td>Retirada do bem</td><td>14.4 (sempre que possível)</td></tr>
+        <tr><td>Bem foi para conserto, emprestado, troca ou guarda provisória</td><td>14.7</td></tr>
+        <tr><td>Descrição ou dependência errada no cadastro</td><td>14.6 + FOR.AI.02 (03)</td></tr>
+        <tr><td>Bem do relatório não encontrado no inventário</td><td>FOR.AI.02 (01)</td></tr>
+        <tr><td>Bem encontrado que não consta no relatório</td><td>FOR.AI.02 (02)</td></tr>
+        <tr><td>Fechamento do mês</td><td>14.8</td></tr>
+        <tr><td>Encerramento do inventário</td><td>14.5 – Ata de inventário</td></tr>
+        <tr><td>Etiquetas novas ou reimpressas</td><td>14.9</td></tr>
+      </tbody></table></div>
+  </div>
+</section>
+
+<!-- ===================== PLANILHA ===================== -->
+<section class="view" id="v-planilha" hidden>
+  <div class="head">
+    <p class="eyebrow">Instruções de preenchimento</p>
+    <h1>Planilha modelo de inventário</h1>
+    <p class="lead">A planilha recebe o Relatório de Bens Imobilizado do SIGA e monta sozinha o inventário, a lista de etiquetas, o FOR.AI.02, o cronograma e o dashboard da igreja.</p>
+    <p class="muted">Arquivo: <b>MODELO INVENTÁRIO ATIVO IMOBILIZADO - SIGA.xlsx</b>. Baixe na aba <a href="#materiais">Materiais</a> e faça uma cópia para cada Casa de Oração.</p>
+  </div>
+  <div class="card" data-search="Planilha: começar">
+    <h2>Para começar</h2>
+    <ol class="steps">
+      <li><div><b>Exporte o relatório no SIGA</b>Emita o Relatório de Bens Imobilizado da sua localidade e exporte para Excel.</div></li>
+      <li><div><b>Copie tudo</b>Abra o arquivo exportado, clique no canto superior esquerdo (selecionar tudo) e copie com Ctrl+C.</div></li>
+      <li><div><b>Cole na aba COLAR_SIGA</b>Clique na célula A1 e cole com Ctrl+V. Não insira nem apague colunas: as fórmulas encontram cada coluna pelo nome.</div></li>
+      <li><div><b>Confira na aba INÍCIO</b>A linha “Situação da importação” deve mostrar ✔ e o número de bens. Se o relatório for da cidade toda, escolha a localidade no filtro (C20).</div></li>
+      <li><div><b>Preencha os dados em amarelo</b>Administração, setor, Casa de Oração, responsáveis e datas (C7 a C15). Eles vão automaticamente para o FOR.AI.02.</div></li>
+      <li><div><b>Monte o cronograma</b>Aba CRONOGRAMA: data de início, produtividade (150 bens por dia por dupla) e nº de duplas. As datas pulam fins de semana.</div></li>
+    </ol>
+  </div>
+  <div class="card" data-search="Planilha: conferência e status">
+    <h2>Durante a conferência</h2>
+    <p>Na aba <b>INVENTÁRIO</b>, preencha somente as colunas amarelas, de L a Q: <b>Status do inventário</b>, dependência encontrada, estado de conservação, observação, data e quem conferiu. A coluna <b>Ação necessária</b> escreve sozinha o que fazer.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Status escolhido</th><th>Ação necessária (automática)</th><th>Formulário</th><th>Cód. FOR.AI.02</th></tr></thead>
+      <tbody id="status-table"></tbody>
+    </table></div>
+    <p class="muted small">Exemplo de linha preenchida: Status “Encontrado – Em outra dependência” • Dependência encontrada “SALAO DE CULTO” • Estado “Bom” • Data 10/11/2026 • Conferido por “João / Pedro”.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card" data-search="Planilha: abas">
+      <h2>O que cada aba faz</h2>
+      <div class="tablewrap" style="border:none"><table><tbody>
+        <tr><td><b>INÍCIO</b></td><td>Dados da igreja, filtro de localidade e passo a passo</td></tr>
+        <tr><td><b>COLAR_SIGA</b></td><td>Onde se cola o relatório (célula A1)</td></tr>
+        <tr><td><b>INVENTÁRIO</b></td><td>Lista de bens; conferência bem a bem</td></tr>
+        <tr><td><b>NÃO_CADASTRADOS</b></td><td>Bens encontrados que não estão no relatório (código 02)</td></tr>
+        <tr><td><b>ETIQUETAS</b></td><td>Lista automática para imprimir ou reimprimir</td></tr>
+        <tr><td><b>FOR.AI.02</b></td><td>Formulário de divergências pronto para assinar</td></tr>
+        <tr><td><b>CRONOGRAMA</b></td><td>Oito etapas com datas e quadro por dependência</td></tr>
+        <tr><td><b>DASHBOARD</b></td><td>Indicadores e “Resumo para o Cronograma Regional”</td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="card" data-search="Planilha: cuidados">
+      <h2>Cuidados</h2>
+      <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px">
+        <li>Cole o relatório <b>antes</b> de começar a conferência e não cole outro por cima depois: as marcações ficam ligadas à linha.</li>
+        <li>Bem fora do relatório: <b>não</b> crie linha no INVENTÁRIO; registre na aba NÃO_CADASTRADOS.</li>
+        <li>Nunca invente numeração de etiqueta nem troque etiqueta entre bens.</li>
+        <li>Para outra igreja, use uma cópia nova do modelo ou “Limpar tudo” na aba COLAR_SIGA.</li>
+        <li>Limite: até 2.000 bens por planilha. Acima disso, use o filtro por localidade.</li>
+        <li>Ao terminar, envie ao gestor regional a linha “Resumo para o Cronograma Regional” da aba DASHBOARD.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" data-search="Etapas do inventário por igreja">
+    <h2>As oito etapas do inventário da igreja</h2>
+    <div class="tablewrap" style="border:none"><table>
+      <thead><tr><th>Etapa</th><th class="num">Dias úteis</th></tr></thead>
+      <tbody>
+        <tr><td>1. Reunião com o Ministério: alinhar data e equipe</td><td class="num">1</td></tr>
+        <tr><td>2. Formar duplas e separar materiais (relatório, trena 3 m, prancheta, etiquetas)</td><td class="num">2</td></tr>
+        <tr><td>3. Extrair o relatório do SIGA e colar na planilha</td><td class="num">1</td></tr>
+        <tr><td>4. Conferência física por dependência</td><td class="num">bens ÷ (150 × duplas)</td></tr>
+        <tr><td>5. Pesquisar divergências: não encontrados e não cadastrados</td><td class="num">5</td></tr>
+        <tr><td>6. Imprimir / reimprimir e afixar etiquetas</td><td class="num">3</td></tr>
+        <tr><td>7. Preencher FOR.AI.02, FOR.AI.01 e formulários 14.x</td><td class="num">2</td></tr>
+        <tr><td>8. Ata de Inventário (14.5) assinada e envio à Administração</td><td class="num">1</td></tr>
+      </tbody></table></div>
+  </div>
+</section>
+
+<!-- ===================== INVENTÁRIO ===================== -->
+<section class="view" id="v-inventario" hidden>
+  <div class="head">
+    <p class="eyebrow">Conferência bem a bem</p>
+    <h1>Inventário da igreja</h1>
+    <p class="lead">Digite o código da igreja para ver todos os bens dela e marcar o que a dupla encontrou. Etiquetas a imprimir e o FOR.AI.02 se montam sozinhos, como na planilha modelo.</p>
+  </div>
+  <div class="card src-card">
+    <div class="row" style="justify-content:space-between">
+      <div style="min-width:0"><p class="eyebrow src-eyebrow"></p><p class="src-fonte" style="font-weight:700"></p></div>
+      <div class="row src-actions"></div>
+    </div>
+    <p class="small muted src-msg"></p>
+  </div>
+  <div class="card">
+    <div class="row" style="align-items:flex-end">
+      <label class="fl" style="flex:1 1 260px">Código da igreja
+        <input class="f" id="iv-code" list="iv-list" placeholder="Ex.: 22-2194 ou BR 22-2194" autocomplete="off">
+      </label>
+      <datalist id="iv-list"></datalist>
+      <button class="btn primary" type="button" id="iv-go">Abrir</button>
+      <button class="btn" type="button" id="iv-xlsx-all">Baixar planilha de todas as igrejas (.xlsx)</button>
+    </div>
+    <p class="small muted" id="iv-hint"></p>
+  </div>
+  <div class="card" style="gap:12px">
+    <h3>Localizar bem pelo número do cadastro</h3>
+    <p class="small muted">Achou uma etiqueta e não sabe de qual igreja é? Digite o número inteiro (ex.: 22-2194 / 000014), só o número do bem (000014 ou 14) ou parte da descrição. A busca olha todas as localidades do relatório.</p>
+    <div class="row" style="align-items:flex-end">
+      <label class="fl" style="flex:1 1 260px">Número ou descrição<input class="f" type="search" id="iv-find" placeholder="Ex.: 000014" autocomplete="off" inputmode="search"></label>
+    </div>
+    <p class="small" id="iv-find-msg" aria-live="polite"></p>
+    <div class="tablewrap" id="iv-find-wrap" style="border:none" hidden><table><thead><tr><th>Código</th><th>Bem</th><th>Localidade</th><th>Dependência</th><th>Situação no inventário</th><th></th></tr></thead><tbody id="iv-find-r"></tbody></table></div>
+  </div>
+  <div id="iv-panel" class="view" style="gap:20px" hidden>
+    <div class="row" style="justify-content:space-between">
+      <div style="min-width:0"><p class="eyebrow" id="iv-eyebrow"></p><h2 id="iv-title"></h2></div>
+      <div class="row"><button class="btn" type="button" id="iv-xlsx">Baixar conferência (.xlsx)</button></div>
+    </div>
+    <div class="grid g4" id="iv-kpis"></div>
+    <div class="progress" style="height:12px"><i id="iv-bar"></i></div>
+    <div class="chips" role="tablist" aria-label="Partes do inventário" id="iv-tabs">
+      <button class="chip" type="button" data-t="bens" aria-pressed="true">Bens</button>
+      <button class="chip" type="button" data-t="etq" aria-pressed="false">Etiquetas</button>
+      <button class="chip" type="button" data-t="div" aria-pressed="false">FOR.AI.02</button>
+      <button class="chip" type="button" data-t="nc" aria-pressed="false">Não cadastrados</button>
+    </div>
+    <div id="iv-t-bens" class="view" style="gap:14px">
+      <div class="card" style="gap:12px">
+        <div class="row" style="align-items:flex-end">
+          <label class="fl" style="flex:1 1 200px">Dependência<select class="f" id="iv-dep"></select></label>
+          <label class="fl" style="flex:2 1 240px">Buscar bem<input class="f" type="search" id="iv-q" placeholder="Código ou descrição"></label>
+        </div>
+        <div class="chips" id="iv-filter" role="group" aria-label="Filtrar bens"></div>
+        <p class="small muted" id="iv-mode"></p>
+      </div>
+      <div id="iv-items" class="grid" style="gap:12px"></div>
+      <div class="row" style="justify-content:center"><button class="btn" type="button" id="iv-more" hidden>Mostrar mais</button></div>
+    </div>
+    <div id="iv-t-etq" class="card" hidden>
+      <h3>Etiquetas a imprimir ou reimprimir</h3>
+      <p class="small muted">Bens marcados como sem etiqueta, etiqueta danificada ou divergente. Envie esta lista para impressão (Formulário 14.9).</p>
+      <div class="tablewrap" style="border:none"><table><thead><tr><th>Código</th><th>Bem</th><th>Dependência</th><th>Motivo</th></tr></thead><tbody id="iv-etq"></tbody></table></div>
+    </div>
+    <div id="iv-t-div" class="card" hidden>
+      <h3>FOR.AI.02 – Divergências do inventário</h3>
+      <p class="small muted">01 = no relatório e não localizado • 02 = na Casa de Oração e fora do relatório • 03 = alteração de cadastro • 04 = outros. Copie para o formulário e colete as assinaturas.</p>
+      <div class="tablewrap" style="border:none"><table><thead><tr><th>Código da etiqueta</th><th>Cód.</th><th>Descrição da divergência</th></tr></thead><tbody id="iv-div"></tbody></table></div>
+    </div>
+    <div id="iv-t-nc" class="view" style="gap:14px" hidden>
+      <form class="card" id="nc-form" style="gap:12px">
+        <h3>Registrar bem que não está no relatório</h3>
+        <p class="small muted">Não invente numeração de etiqueta. Descreva o bem com detalhes e pesquise a origem antes de regularizar (FOR.AI.02, código 02).</p>
+        <div class="grid g3">
+          <label class="fl">Descrição do bem<input class="f" name="desc" id="nc-desc" required placeholder="Ex.: Bebedouro elétrico de coluna"></label>
+          <label class="fl">Marca / modelo / medidas<input class="f" name="marca" id="nc-marca"></label>
+          <label class="fl">Dependência (onde está)<input class="f" name="dep" id="nc-dep" list="iv-deps"></label>
+          <label class="fl">Quantidade<input class="f" name="qtd" id="nc-qtd" type="number" min="1" step="1" value="1"></label>
+          <label class="fl">Nº da etiqueta (se houver)<input class="f" name="etq" id="nc-etq"></label>
+          <label class="fl">Origem provável<select class="f" name="orig" id="nc-orig"><option>Não identificada</option><option>Compra</option><option>Doação</option><option>Transferência</option></select></label>
+        </div>
+        <datalist id="iv-deps"></datalist>
+        <label class="fl">Observação<input class="f" name="obs" id="nc-obs"></label>
+        <div class="row"><button class="btn primary" type="submit">Adicionar</button></div>
+      </form>
+      <div class="card"><h3>Bens registrados</h3><div class="tablewrap" style="border:none"><table><thead><tr><th>Descrição</th><th>Dependência</th><th class="num">Qtde</th><th>Etiqueta</th><th>Origem</th><th></th></tr></thead><tbody id="nc-list"></tbody></table></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CRONOGRAMA ===================== -->
+<section class="view" id="v-cronograma" hidden>
+  <div class="head">
+    <p class="eyebrow">Sua Administração</p>
+    <h1>Cronograma de inventário</h1>
+    <p class="lead">Carregue o Relatório de Bens Imobilizado do SIGA da sua Administração: o portal monta o cronograma das suas localidades. O que você registra aqui só você vê.</p>
+  </div>
+  <div class="card src-card">
+    <div class="row" style="justify-content:space-between">
+      <div style="min-width:0"><p class="eyebrow src-eyebrow"></p><p class="src-fonte" style="font-weight:700"></p></div>
+      <div class="row src-actions"></div>
+    </div>
+    <p class="small muted src-msg"></p>
+  </div>
+  <div class="grid g4" id="crono-kpis"></div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:flex-end">
+      <div class="row" style="align-items:flex-end">
+        <label class="fl">Bens por dia, por dupla<input class="f" type="number" min="10" step="10" id="p-prod" style="width:120px"></label>
+        <label class="fl">Nº de duplas<input class="f" type="number" min="1" step="1" id="p-duplas" style="width:100px"></label>
+        <label class="fl">Prazo final<input class="f" type="date" id="p-prazo" style="width:170px"></label>
+      </div>
+      <div class="row"><button class="btn" type="button" id="crono-xlsx">Baixar planilha (.xlsx)</button><input class="f" id="crono-q" type="search" placeholder="Filtrar localidade…" style="width:220px" aria-label="Filtrar localidade"></div>
+    </div>
+    <div class="chips" id="crono-chips" role="group" aria-label="Filtrar por status"></div>
+    <p class="small muted" id="crono-mode"></p>
+  </div>
+  <div class="tablewrap" style="max-height:70vh">
+    <table>
+      <thead><tr><th>Localidade</th><th class="num">Bens</th><th class="num">Vl. atual</th><th class="num">Dias</th><th>Responsável</th><th>Início prev.</th><th>Término prev.</th><th>Término real</th><th>Conferido</th><th>Status</th></tr></thead>
+      <tbody id="crono-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== DASHBOARD ===================== -->
+<section class="view" id="v-dashboard" hidden>
+  <div class="head">
+    <p class="eyebrow">Indicadores do Ativo</p>
+    <h1>Dashboard por localidade</h1>
+  </div>
+  <div class="card src-card">
+    <div class="row" style="justify-content:space-between">
+      <div style="min-width:0"><p class="eyebrow src-eyebrow"></p><p class="src-fonte" style="font-weight:700"></p></div>
+      <div class="row"><label class="fl">Localidade<select class="f" id="det-loc"></select></label><div class="row src-actions" style="align-self:flex-end"></div></div>
+    </div>
+    <p class="small muted src-msg"></p>
+  </div>
+  <div class="grid g4" id="det-kpis"></div>
+  <div class="grid g2">
+    <div class="card"><h3>Valor atual por dependência</h3><div class="bars" id="det-dep"></div></div>
+    <div class="card"><h3>Bens por conta contábil</h3><div class="bars" id="det-conta"></div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Situação contábil</h3><div class="bars" id="det-st"></div><p class="small muted">Depreciado = valor atual zerado ou quase; o bem continua sendo controlado e inventariado.</p></div>
+    <div class="card"><h3>10 bens de maior valor atual</h3><div class="tablewrap" style="border:none"><table><thead><tr><th>Código</th><th>Bem</th><th class="num">Vl. atual</th></tr></thead><tbody id="det-top"></tbody></table></div></div>
+  </div>
+  <div class="card"><h3>Resumo por localidade</h3><div class="tablewrap" style="border:none;max-height:60vh"><table><thead><tr><th>Localidade</th><th class="num">Bens</th><th class="num">Vl. aquisição</th><th class="num">Vl. atual</th><th class="num">% depreciado</th><th class="num">Bens depreciados</th><th>Inventário</th></tr></thead><tbody id="det-locs"></tbody></table></div></div>
+</section>
+<input type="file" id="sig-file" accept=".xls,.xlsx" hidden>
+
+<!-- ===================== BUSCA ===================== -->
+<section class="view" id="v-busca" hidden>
+  <div class="head"><p class="eyebrow">Resultado da busca</p><h1 id="busca-t">Busca</h1></div>
+  <div class="grid" id="busca-r"></div>
+</section>
+</main>
+
+<div class="overlay" id="ov" hidden></div>
+<div class="toast" id="toast" hidden></div>
+<div class="present" id="present" hidden><img id="pr-img" alt=""><div class="pbar"><button class="btn" type="button" id="pr-prev">‹</button><span id="pr-count"></span><button class="btn" type="button" id="pr-next">›</button><button class="btn" type="button" id="pr-exit">Sair (Esc)</button></div></div>
+
+<script>
+const FORMS = {"forai01":{"pages":["forai01-1.jpg"],"text":"FOR – FORMULÁRIO Rótulo Código: FOR.AI.01 Rev.: 00 CCB Esfera de Aplicação: Administração DECLARAÇÃO DE DOAÇÃO DE BENS Data Elaboração: 29/09/2026 MÓVEIS E MATERIAIS Data Revisão: Departamento: Ativo Imobilizado Data de Validade: 29/09/2028 Fontes / Referência: Manual Administrativo Página: 1/1 Abrangência Geográfica: Nacional Idioma: Português - BR Público-alvo: Administradores da Casa de Oração TIPO DE DOAÇÃO: ☐ MATERIAIS ☐ BEM MÓVEL LOCALIDADE RECEBEDORA Administração Cidade Setor CNPJ da Administração Nº Relatório Casa de Oração DESCRIÇÃO DO ITEM Nº Nota fiscal Data de emissão Valor Fornecedor Declaramos que estamos doando à CONGREGAÇÃO CRISTÃ NO BRASIL o item acima descrito, de nossa propriedade, livre e desembaraçado de dívidas e ônus, para uso na Casa de Oração acima identificada. ☐ O item tem mais de cinco anos de uso e o documento fiscal de aquisição está anexo. ☐ O item tem mais de cinco anos de uso, porém o documento fiscal de aquisição foi extraviado. ☐ O item tem até cinco anos de uso e o documento fiscal de aquisição está anexo. Por ser verdade firmamos esta declaração. Local e data: DOADOR Dados do doador Dados do cônjuge Nome Endereço CPF RG Assinatura TERMO DE ACEITE DA DOAÇÃO A Congregação Cristã No Brasil aceita a presente doação por atender necessidade do momento. Nome do Administrador/Assessor Assinatura Administrador / Assessor Local: Data: Documento interno, de uso exclusivo da Congregação Cristã no Brasil. Proibida a reprodução, distribuição sem autorização formal. CÓPIAS EXTERNAS NÃO AUTORIZADAS violam as normas institucionais. FOR.AI.01_REV_00"},"forai02":{"pages":["forai02-1.jpg"],"text":"FOR – FORMULÁRIO Código: FOR.AI.02 Rev.: 01 CCB Rótulo Esfera de Aplicação: Administração DIVERGÊNCIAS DO INVENTÁRIO DE BENS Data Elaboração: 21/09/2025 MÓVEIS E IMÓVEIS Data Revisão: 29/09/2026 Departamento: Ativo Imobilizado Data de Validade: 29/09/2028 Fontes / Referência: Página: 1/1 Abrangência Geográfica: Nacional Idioma: Português - BR Público-alvo: Colaboradores(as) do Ativo Imobilizado da Casa de Oração LOCALIDADE Administração Setor Localidade Data do Inventário MOTIVO DA DIVERGÊNCIA Código da Divergência Motivo da Divergência 01 Bens do Relatório que não foram localizados fisicamente na Casa de Oração; 02 Bens na Casa de Oração que não constam no Relatório de Bens Imobilizado; 03 Alteração de Cadastro de Bem; 04 Outros. Código da Código da Etiqueta Descrição da Divergência Divergência Responsável pelo Preenchimento – Nome Data de Preenchimento Nome Assinatura Ancião/ Díacono Cooperador do Oficío Ministerial Responsável pelo Imobilizado Documento interno, de uso exclusivo da Congregação Cristã no Brasil. Proibida a reprodução, distribuição sem autorização formal. CÓPIAS EXTERNAS NÃO AUTORIZADAS violam as normas institucionais. FOR.AI.02_REV01"},"f141":{"pages":["f141-1.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL FORMULÁRIO 14.1 DECLARAÇÃO DE DOAÇÃO DE BENS MÓVEIS Data Emissão: A LOCALIDADE RECEBEDORA Administração Cidade Setor CNPJ da Administração N° Relatório Casa de Oração B DESCRIÇÃO DO BEM N° Nota fiscal Data de emissão Valor Fornecedor Declaramos que estamos doando à CONGREGAÇÃO CRISTÃ NO BRASIL o bem acima descrito, de nossa propriedade, livre e desembaraçado de dívidas e ônus, para uso na Casa de Oração acima identificada. O bem tem mais de cinco anos de uso e o documento fiscal de aquisição está anexo. O bem tem mais de cinco anos de uso, porém o documento fiscal de aquisição foi extraviado. O bem tem até cinco anos de uso e o documento fiscal de aquisição está anexo. Por ser verdade firmamos esta declaração. Local e data: , / / C DOADOR Dados do doador Dados do cônjuge Nome Endereço CPF RG Assinatura D TERMO DE ACEITE DA DOAÇÃO A Congregação Cristã No Brasil aceita a presente doação por atender necessidade do momento. Nome do Administrador/Assessor Assinatura Administrador / Assessor Doador 1"},"f142":{"pages":["f142-1.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL Formulário 14.2 OCORRÊNCIA DE ENTRADAS DE BENS MÓVEIS Data Emissão: A LOCALIDADE RECEBEDORA Administração Cidade Setor CNPJ da Administração Nº do Relatório Casa de Oração B MOTIVO DA OCORRÊNCIA Entradas Transferência recebida Doação Descrição do Motivo: Localidade de origem quando o motivo for Transferência recebida Administração Cidade / Setor Nº do Relatório Casa de Oração C DADOS DO BEM Tipo de Quantidade Descrição Valor de aquisição Local do bem bem Colaborador Administrativo Ministério Administração /Assessor Nome Assinatur a 1 via - Contabilidade 1 via - Emissor 1 via - Destinatário"},"f143":{"pages":["f143-1.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL Formulário 14.3 OCORRÊNCIA DE SAIDAS DE BENS MÓVEIS Data Emissão: A LOCALIDADE EMISSORA Administração Cidade Setor Data da reunião ministerial (RMA) CNPJ da Administração Nº do Relatório Casa de Oração B MOTIVO DA OCORRÊNCIA Saídas Transferência enviada Venda Crime Perda/Extravio Obsolescência Descrição do Motivo: Localidade de destino quando o motivo for Transferência enviada Administração Cidade / Setor Nº do Relatório Casa de Oração C DADOS DO BEM Código do bem Quantidad Descrição Valor original Valor de venda e Colaborador Administrativo Ministério Administração /Assessor Nome Assinatura 1 via - Contabilidade 1 via - Emissor 1 via - Destinatário"},"f144":{"pages":["f144-1.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL FORMULÁRIO 14.4 DECLARAÇÃO DE RETIRADA DE BEM Data Emissão: A LOCALIDADE EMISSORA Administração Cidade Setor CNPJ da Administração N° Relatório Casa de Oração B DADOS DO BEM Código do bem Descrição do bem Declaro que recebi o bem acima descrito usado até esta data na Casa de Oração acima. Por ser verdade firmo esta declaração e responsabilizo-me pelo uso e destino que der ao bem ora recebido, isentando a CONGREGAÇÃO CRISTÃ NO BRASIL de quaisquer ônus que advenham a partir desta data. Local e data: Nome CPF/CNPJ RG Rua Número CEP Cidade Estado Assinatura"},"f145":{"pages":["f145-1.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL FORMULÁRIO 14.5 ATA DE INVENTÁRIO DOS BENS MÓVEIS Data Emissão: A LOCALIDADE EMISSORA Administração Cidade Setor CNPJ da Administração N° Relatório Casa de Oração Nesta data foi realizado o serviço de: aposição de etiquetas para identificação dos bens móveis conferência física dos bens móveis. Ao final dos trabalhos foram registradas as seguintes ocorrências relevantes: não houve fato relevante para ser registrado. Encerramento: Foi encerrada esta reunião com uma oração de agradecimento a Deus, sendo esta ata assinada pelos presentes, ministério e outros mais que dela tomaram conhecimento. Nome Ministério / cargo / colaborador Assinatura Encaminhar uma via para a Administração / Setor 1"},"f146":{"pages":["f146-1.jpg","f146-2.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL FORMULÁRIO 14.6 ALTERAÇÃO DE CADASTRO DE BEM Data Emissão: A LOCALIDADE EMISSORA Administração Cidade Setor CNPJ da Administração N° Relatório Casa de Oração B DADOS DO BEM Código do bem Descrição Tipo bem Localização Etiqueta De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para De Para Nome do responsável Assinatura do Responsável 1 via - Contabilidade 1 via - Emissor 1 via - Destinatário"},"f147":{"pages":["f147-1.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL FORMULÁRIO 14.7 MOVIMENTAÇÃO INTERNA DE BEM Data Emissão: Este formulário deve ser preenchido sempre que um bem for retirado de um local e levado para manutenção, troca ou empréstimo para outro local dentro da administração. A LOCALIDADE EMISSORA Administração / Setor Dependência onde o bem está alocado B MOTIVO DA RETIRADA E LOCAL DE DESTINO Empréstimo Manutenção Troca Descrever: Código do bem Descrição do bem Destino Nome Identificação Número RG/CPF Assinatura Data da devolução"},"f148":{"pages":["f148-1.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL FORMULÁRIO 14.8 MOVIMENTO MENSAL DE BENS Data Emissão: Este formulário deve ser preenchido mensalmente com os dados das movimentações de entradas e saídas de bens na Casa de Oração. A LOCALIDADE EMISSORA Administração / Setor Nº da Casa de Oração Nome da Casa de oração Competência B TIPOS DE MOVIMENTAÇÃO Entradas TR - Transferência recebida DR - Doação recebida CP – Compra Saídas TE - Transferência enviada OB - Obsolescência PE - Perda / extravio CR - Crime Venda VD – Venda Valor da venda: R$ C DADOS DA MOVIMENTAÇÃO Tipo Quant Descrição do bem (marca/modelo) Documento Valor Dependência D OBSERVAÇÕES Ancião / Diácono Responsável pelas informações Nome Assinatura Enviar obrigatoriamente anexo ao Balancete financeiro"},"f149":{"pages":["f149-1.jpg","f149-2.jpg"],"text":"CONGREGAÇÃO CRISTÃ NO BRASIL Formulário 14.9 ETIQUETA DE IDENTIFICAÇÃO DE BENS A CARACTERÍSTICAS DA ETIQUETA Película protetora: Material: Policarbonato Dimensão: 67 mm x 24 mm Margens 4 mm em cor cinza Bloco central transparente Cola resistente no verso Fornecimento Folhas com 28 unidades em pacote com 36 folhas Total 1.008 unidades Etiqueta identificadora Material: Papel auto-adesivo acrílico Dimensão da etiqueta: 57 mm x 14 mm Cola resistente no verso Fornecimento Folhas com 60 etiquetas em pacote com 22 folhas Total 1320 etiquetas Impressão da etiqueta Utilizar somente impressora a laser. Não havendo na administração, servir-se de outros locais ou comunicar a Regional Administrativa. No programa PDF, habilitar: OPÇÕES DE TAMANHO: Tamanho real ou 100% ORIENTAÇÃO: Retrato PROPRIEDADES DO DOCUMENTO: Tamanho do papel: A4 Antes de imprimir no formulário da etiqueta, fazer teste em papel sulfite comum e colocar sobre o formulário da etiqueta em frente à luz para verificar o alinhamento. Se, eventualmente, a impressão do arquivo .pdf apresentar desalinhamento entre as etiquetas é necessário desabilitar a opção de ajuste automático de impressão (se necessário pedir ajuda a um Irmão da informática). Forma de aposição A etiqueta contém o código de barra identificador do bem e a descrição. Destacar a etiqueta e colar no bem. Cobrir com o protetor de policarbonato, cuidando para a etiqueta ficar centralizada na janela. Recomendação de compra As etiquetas são fornecidas em caixas com 1008 policarbonatos e 1320 etiquetas adesivas proporcionando uma margem de segurança deste formulário. Fornecedor atual Distribuidora Geral Brás, através das Distribuidoras Regionais que repassarão para as Administrações. O código para aquisição do kit da etiqueta é C-53. Recomendação de compra As etiquetas são fornecidas em caixas com 1008 policarbonatos e 1320 etiquetas adesivas proporcionando uma margem de segurança deste formulário B LOCALIZAÇÃO DAS ETIQUETAS NOS BENS Dentro do Salão de Culto, as etiquetas não podem ocupar lugar de destaque nos bens, no entanto devem ser colocadas em locais de fácil acesso aos administradores nos dias de inventário. BENS LOCALIZAÇÃO Andaimes Em um local da Sala de manutenção Aparelho telefônico Na parte inferior, se for móvel, afixar na base. Armário fundo bíblico Canto lateral superior, do lado oposto de onde há circulação de pessoas. Bancos Genuflexório Canto superior interno, de quem olha pelas costas, do lado do corredor. Banqueta No suporte do assento Bebedouro móvel Lado superior esquerdo Cadeira de púlpito Parte traseira do suporte do assento Cadeira de roda Parte traseira do suporte do assento Cadeiras Parte traseira do suporte do assento Caixa de coleta Canto lateral superior, do lado oposto de onde há circulação de pessoas. Caixa de som No canto superior, lado da parede de quem olha. Cama hospitalar Frontal superior esquerdo Central telefônica Porta superior esquerda CPU No lado superior esquerdo. Divisórias Não deve ser inventariada Eletrodoméstico Parte inferior Equipamentos eletrônicos Porta superior esquerda Escadas Lateral superior interno Estabilizador Qualquer lateral, desde que seja externa e lisa Estante musical de regência Parte traseira Fixas no banco e constam na descrição do banco, não utilizar etiqueta. Em uso no salão, uma para o lote na parte interna da porta da tribuna. Estantes musicais Reservas, uma etiqueta para o lote, na parte interna da porta da tribuna ou no local onde são guardadas. Extintores No suporte ou na parede ou de outra forma a critério local Fax No lado superior esquerdo. Fogões Frontal superior esquerdo, onde não haja aquecimento. Fragmentadora Lado superior esquerdo Freezer Frontal superior esquerdo Gaveteiro Frontal superior esquerdo Geladeiras Frontal superior esquerdo Grade do órgão Lado oposto ao corredor. Impressora No lado superior, ou na parte traseira. Mapas Lado superior esquerdo Máquina de escrever Lado superior esquerdo Máquina de lavar Frontal superior esquerdo Mesa de som, compressor e amplificador Na porta da mesa de som ou nos suportes dos componentes Mesa redonda Próximo à borda, na parte inferior do tampo. Mesas Parte frontal lado superior esquerdo Micro ondas Frontal superior esquerdo Microfones Porta da tribuna canto superior esquerdo. Monitor Em parte lisa traseira. Nobreak Parte lisa externa esquerda Notebook Parte inferior Parte traseira, acima ou abaixo da etiqueta de marca / modelo. Órgão Órgão de terceiro (emprestado) não pode ser etiquetado. Identificar quem emprestou. Prateleiras móveis Frontal superior esquerdo Relógio Porta da tribuna canto superior esquerdo. Retro projetor Parte inferior Tela com pedestal Lado superior esquerdo Tribuna Porta da tribuna canto superior esquerdo. Ventilador Porta da tribuna canto superior esquerdo. Outros equipamentos Partes lisas lado superior esquerdo"},"resumo":{"pages":["resumo-1.jpg","resumo-2.jpg","resumo-3.jpg"],"text":"CCB | RESUMO PRÁTICO - PATRIMÔNIO / BENS MÓVEIS MANUAL RÁPIDO DO COLABORADOR Controle do Ativo Imobilizado - Casa de Oração Objetivo: conferir fisicamente os bens da Casa de Oração, verificando existência, localização, identificação, utilização e estado de conservação, mantendo o controle patrimonial organizado e confiável. 1. O QUE É ATIVO IMOBILIZADO? • Em regra, são bens duráveis utilizados pela Congregação, com vida útil superior a 12 meses, observadas as exceções previstas no manual. • O controle deve considerar todos os departamentos e dependências da Localidade. • Na dúvida sobre a classificação de um item, anote e consulte o responsável antes de qualquer alteração. 2. O QUE DEVEMOS INVENTARIAR? INVENTARIAR EM GERAL, NÃO INVENTARIAR Bancos, tribunas e móveis Panelas, talheres e utensílios comuns de cozinha Órgãos e instrumentos musicais Cafeteira e filtro de barro Equipamentos de som Grampeador, furador e prancheta Computadores e equipamentos de informática Cestos de lixo Ventiladores e bebedouros Colchões e travesseiros Máquinas e equipamentos controláveis Capacetes, botas e cones Veículos Pequenas ferramentas de construção Instalações e equipamentos industriais previstos no manual Bengalas, muletas e andadores Atenção: existem exceções. Equipamentos industriais de cozinha e determinados equipamentos como betoneiras, talhas e andaimes são exemplos que exigem controle conforme o manual. 3. COMO FAZER A CONFERÊNCIA NA PRÁTICA? 1. Escolha uma dependência: Comece por um ambiente e termine-o antes de passar ao próximo. 2. Observe tudo o que existe: Não procure apenas o que já aparece no relatório. 3. Identifique o bem: Veja o que é, onde está e se possui etiqueta patrimonial. 4. Confira a etiqueta: O número deve corresponder exatamente ao bem identificado. 5. Compare com o relatório: Verifique se o bem encontrado está devidamente relacionado. 6. Observe a situação: Registre utilização, localização e estado de conservação. 7. Registre divergências: Não corrija por conta própria; anote para análise do responsável. Material de apoio baseado no Manual Administrativo - Seção 14 - Patrimônio/Bens Móveis CCB | RESUMO PRÁTICO - PATRIMÔNIO / BENS MÓVEIS 4. REGRA DE OURO DO INVENTÁRIO OLHE O AMBIENTE PRIMEIRO. DEPOIS CONFIRA O RELATÓRIO. Isso permite encontrar tanto bens cadastrados que não estão no local quanto bens existentes que ainda não constam na relação. 5. TRABALHO EM DUPLA E MATERIAIS • A contagem deve ser feita, no mínimo, em dupla: um colaborador identifica/conta e o outro registra ou atualiza o relatório. • Levar trena de no mínimo 3 metros para medições de bancos, armários e itens semelhantes. • Utilizar prancheta com o relatório ou notebook, conforme orientação da equipe. • Ter a relação de todas as dependências da Localidade para não deixar nenhum ambiente sem conferência. 6. O QUE FAZER QUANDO HOUVER DIVERGÊNCIA? SITUAÇÃO COMO AGIR Bem sem etiqueta Não invente numeração. Registre e encaminhe para verificação. Bem no relatório, mas não encontrado Registre a ocorrência para investigação do destino. Bem encontrado, mas não consta no relatório Registre para análise e posterior regularização. Bem substituído por outro O bem antigo deve ser baixado e o novo incluído; não apenas alterar a descrição. Código de bem baixado Nunca reutilizar o código patrimonial antigo em um bem novo. 7. CUIDADO COM AS ETIQUETAS • A etiqueta deve corresponder exatamente ao bem ao qual foi destinada. • Se houver sobra de etiqueta, o bem correspondente deve ser investigado. • Se houver bem físico sem etiqueta ou sem registro, a origem deve ser verificada antes da regularização. • Nunca trocar ou reaproveitar etiqueta sem orientação. 8. CHECKLIST DO COLABORADOR Material de apoio baseado no Manual Administrativo - Seção 14 - Patrimônio/Bens Móveis CCB | RESUMO PRÁTICO - PATRIMÔNIO / BENS MÓVEIS ☐ Conferi todo o ambiente? ☐ Identifiquei todos os bens controláveis? ☐ Conferi as etiquetas? ☐ Comparei os bens físicos com o relatório? ☐ A localização está correta? ☐ Observei utilização e estado de conservação? ☐ Existe bem sem etiqueta? ☐ Existe bem que não consta no relatório? ☐ Existe bem no relatório que não foi encontrado? ☐ Registrei todas as divergências? 9. RESUMO PARA GUARDAR OLHAR → IDENTIFICAR → CONFERIR → REGISTRAR → INFORMAR DIVERGÊNCIAS EM CASO DE DÚVIDA: PERGUNTE. NÃO PRESUMA. “Porque Deus não é injusto para se esquecer da vossa obra e do trabalho de amor que para com o seu nome mostrastes.” Hebreus 6:10 Este material é um resumo de apoio e não substitui a leitura do Manual Administrativo da CCB - Seção 14. Material de apoio baseado no Manual Administrativo - Seção 14 - Patrimônio/Bens Móveis"}};
+const CERQ = {"fonte":"","rows":[]};
+const SLIDES = [{"n":1,"img":"s-01.jpg","notes":"0:00 – Boas-vindas. Apresentar-se e agradecer a presença de todos. Explicar que o treinamento dura no máximo 2h30, com um intervalo de 10 minutos, e que é pensado também para quem nunca trabalhou na Administração. Material: Manual Administrativo, Seção 14 – Patrimônio – Bens Móveis, novos formulários FOR.AI.01 e FOR.AI.02 e a planilha modelo de inventário.","title":"Patrimônio Bens Móveis"},{"n":2,"img":"s-02.jpg","notes":"0:02 – Convidar um irmão do Ministério (ou quem estiver presidindo) para a oração de abertura. Depois, ler o versículo em voz alta. Mensagem: não estamos aqui para aprender burocracia; estamos aprendendo a cuidar do que pertence à obra de Deus. O trabalho é espiritual antes de ser administrativo.","title":"“Se o Senhor não edificar a casa, em vão trabalham os que a edificam.”"},{"n":3,"img":"s-03.jpg","notes":"0:05 – Mostrar o roteiro. Combinar com o grupo: perguntas são bem-vindas a qualquer momento; dúvidas mais longas anotamos e respondemos antes do intervalo ou no fim. Pedir que todos tenham em mãos (ou no celular) o relatório da sua Casa de Oração, se possível.","title":"Roteiro de hoje: 2h30"},{"n":4,"img":"s-04.jpg","notes":"0:10 – Conversa inicial. Perguntar: “Quem aqui está ajudando na Administração pela primeira vez?” Acolher essas pessoas. Dizer com clareza: ninguém precisa saber contabilidade para fazer um bom inventário. O que se espera é fidelidade, atenção e disposição para perguntar. Quem já tem experiência é convidado a ajudar quem está chegando.","title":"Primeira vez na Administração?"},{"n":5,"img":"s-05.jpg","notes":"0:13 – Explicar de forma simples: cada banco, órgão, bebedouro ou ventilador da Casa de Oração está registrado no sistema da Administração (SIGA) e aparece na contabilidade. O setor de Patrimônio – Bens Móveis cuida desses bens: entrada, saída, movimentação e inventário. O que fazemos no salão de culto aparece no balanço da Administração. Por isso cada anotação importa.","title":"Onde o seu trabalho se encaixa"},{"n":6,"img":"s-06.jpg","notes":"0:16 – Pequeno glossário para quem está chegando. Ler linha por linha e perguntar se alguém já ouviu essas palavras. Reforçar: “localidade” é a Casa de Oração no sistema; “dependência” é a sala. Em Cerquilho, por exemplo, a localidade BR 22-2194 é Nova Cerquilho. O relatório do SIGA traz todos esses campos em colunas.","title":"Palavras que você vai ouvir"},{"n":7,"img":"s-07.jpg","notes":"0:19 – Exemplo real do relatório de Cerquilho: o código 22-2194 / 000004 é o órgão Tokai MD 100-II da localidade BR 22-2194, no salão de culto. A primeira parte identifica a localidade; a segunda é o número do bem. Regra do Manual: o código de um bem baixado nunca é reaproveitado em outro bem. A etiqueta deve corresponder exatamente ao bem ao qual foi destinada.","title":"Como ler o código do bem"},{"n":8,"img":"s-08.jpg","notes":"0:22 – Pergunta para o grupo: “Por que vocês acham que precisamos controlar os bens?” Ouvir 2 ou 3 respostas e depois mostrar os quatro motivos. Destacar: o controle protege também quem serve. Quando tudo está registrado, ninguém fica exposto a dúvida ou suspeita. Ler 2 Coríntios 8:21.","title":"Por que controlar?"},{"n":9,"img":"s-09.jpg","notes":"0:25 – Momento de reflexão. Não existe bem “pequeno demais” para ser cuidado com fidelidade. A forma como cuidamos de um ventilador mostra como cuidaremos de algo maior. Deixar alguns segundos de silêncio antes de avançar.","title":"“Quem é fiel no mínimo, também é fiel no muito.”"},{"n":10,"img":"s-10.jpg","notes":"0:28 – Números reais do relatório de Cerquilho (posição 04/11/2026): 1.106 bens, 13 localidades (incluindo a ADM), 770 bens nos salões de culto, R$ 3.086.688,54 de valor de aquisição e R$ 1.697.841,93 de valor atual (817 bens ativos e 289 depreciados). Pergunta ao grupo: “Quantos bancos vocês acham que tem na sua Casa de Oração?” Depois comparar com o relatório. Isso mostra por que o inventário precisa de método.","title":"Quanto cuidamos juntos?"},{"n":11,"img":"s-11.jpg","notes":"0:35 – Fundamento do Manual (Seção 14): saldo contábil = imobilizado = físico. Exemplo: se o relatório lista 77 bancos no salão de culto e contamos 75, há 2 divergências. Não se “acerta” mudando o relatório nem se conta “de cabeça”: pesquisa-se o que aconteceu e documenta-se.","title":"Os três precisam contar a mesma história"},{"n":12,"img":"s-12.jpg","notes":"0:38 – Manual, item 14.1.1.1: imobilizado são os bens duráveis que a Congregação utiliza para suas finalidades (bancos, órgãos e instrumentos, máquinas, equipamentos, computadores). O critério adotado é a DURABILIDADE: se dura mais de um ano sem alteração ou desgaste significativo, é imobilizado. Bens de curta duração são consumidos dentro do exercício e não entram. Na dúvida sobre um item, anotar e consultar o responsável.","title":"O que é ativo imobilizado?"},{"n":13,"img":"s-13.jpg","notes":"0:42 – Manual, páginas 6 a 8, e Resumo Prático. Ler as duas colunas. Destacar as exceções: equipamentos industriais de cozinha e certos equipamentos de obra (betoneiras, talhas, andaimes) são controlados. Bens de terceiros (por exemplo, um órgão emprestado) não entram no nosso cadastro, mas devem ser controlados separadamente para não serem confundidos.","title":"O que entra no inventário"},{"n":14,"img":"s-14.jpg","notes":"0:46 – Dinâmica rápida (4 minutos). Ler cada item e pedir que o grupo responda antes de olhar a resposta. Pontos de atenção: fogão industrial e andaime são exceções controladas; muleta, bengala e andador em geral não são inventariados; cesto de lixo não. Fechar o bloco de conceitos.","title":"Inventaria ou não?"},{"n":15,"img":"s-15.jpg","notes":"0:50 – Ponto mais importante desta parte. O Formulário 14.1 (Declaração de doação de bem móvel) não deve mais ser usado: no lugar dele entra o FOR.AI.01 (revisão 00), que serve para doação de bens móveis e também de materiais. E passa a existir o FOR.AI.02 (revisão 01), que registra todas as divergências encontradas no inventário, com código para cada tipo. Os demais formulários da Seção 14 (14.2 a 14.9) continuam. Recolher os formulários 14.1 em branco que ainda estiverem nas Casas de Oração.","title":"O Formulário 14.1 foi substituído"},{"n":16,"img":"s-16.jpg","notes":"0:55 – Mostrar o FOR.AI.01 impresso, campo por campo. Diferenças em relação ao antigo 14.1: (1) agora existe o campo “Tipo de doação” – materiais ou bem móvel; (2) a declaração fala em “item”, valendo para materiais também. Continuam: localidade recebedora com CNPJ da Administração, nº do relatório e Casa de Oração; dados da nota fiscal; as três opções de tempo de uso (mais de 5 anos com NF anexa; mais de 5 anos com NF extraviada; até 5 anos com NF anexa); dados do doador e do cônjuge; e o Termo de Aceite assinado pelo Administrador/Assessor, com local e data. Sem o aceite assinado, a doação não está completa.","title":"Como preencher o FOR.AI.01"},{"n":17,"img":"s-17.jpg","notes":"1:00 – O FOR.AI.02 organiza tudo o que não bateu no inventário. Cabeçalho: Administração, Setor, Localidade e Data do Inventário. Em cada linha: código da etiqueta, código da divergência (01 a 04) e a descrição. No fim, responsável pelo preenchimento, data e as três assinaturas. Boa notícia: a planilha modelo monta o FOR.AI.02 sozinha, a partir do que for marcado na conferência. Exemplos de descrição: “Não localizado no salão de culto; pesquisado com o diácono, sem informação”; “Ventilador de parede encontrado no átrio, sem etiqueta”.","title":"Cada divergência tem um código"},{"n":18,"img":"s-18.jpg","notes":"1:04 – Entradas (Manual, páginas 20 a 23). Compra: nota fiscal com a localidade e a dependência e Formulário 14.2 (Ocorrência de entrada). Transferência: 14.2 no destino e 14.3 (Declaração de saída) na origem. Doação: agora FOR.AI.01 + 14.2 (antes era 14.1 + 14.2). Exemplo: um ventilador comprado chegou à Casa de Oração → 14.2 com cópia da NF.","title":"Três caminhos de entrada"},{"n":19,"img":"s-19.jpg","notes":"1:07 – Regras de doação (Manual, páginas 21 a 23), agora aplicadas ao FOR.AI.01. Exemplo: um irmão quer doar uma cadeira de rodas usada há 7 anos e não tem mais a nota. Marca-se no FOR.AI.01 “mais de cinco anos de uso, documento fiscal extraviado” e o contador avalia o valor. A documentação faz parte da entrada: sem ela, o bem fica “sem origem” no inventário.","title":"Doação: atenção aos documentos"},{"n":20,"img":"s-20.jpg","notes":"1:09 – Saídas (Manual, páginas 23 a 27). Cada saída precisa do motivo correto no Formulário 14.3 (Declaração de saída): transferência, venda, crime, perda/extravio ou obsolescência. A retirada do bem usa, sempre que possível, o 14.4 (Declaração de retirada). Nenhuma baixa acontece sem aprovação, e a data da reunião deve constar. Lembrar: código de bem baixado nunca é reaproveitado.","title":"Saída: identifique o motivo"},{"n":21,"img":"s-21.jpg","notes":"1:12 – Exemplo: o órgão foi enviado para conserto e vai voltar. Não é baixa: preenche-se o 14.7 com o protocolo da assistência técnica. No inventário, esse bem aparece como “Em manutenção/Emprestado” e o 14.7 comprova onde ele está. Se o bem antigo de uma troca não voltar, é preciso regularizar com 14.3.","title":"Saída temporária não é baixa"},{"n":22,"img":"s-22.jpg","notes":"1:15 – O Movimento mensal de bens (14.8) consolida todas as ocorrências do mês, inclusive aquelas cujo documento ainda está pendente. É o controle que evita surpresas no inventário anual: se o mês fecha certo, o ano fecha certo. Sugestão de gestão: definir um dia fixo do mês para o fechamento.","title":"Todo mês, um fechamento"},{"n":23,"img":"s-23.jpg","notes":"1:18 – Mapa para guardar (sugestão: imprimir este slide e deixar na pasta da Casa de Oração). Em verde, os formulários novos. Recapitular rapidamente: entrada 14.2, saída 14.3, retirada 14.4, ata 14.5, alteração 14.6, movimentação 14.7, mensal 14.8, etiquetas 14.9. Anunciar o intervalo.","title":"Mapa dos formulários"},{"n":24,"img":"s-24.jpg","notes":"1:20 – Intervalo de 10 minutos. Enquanto isso, abrir no computador a planilha EXEMPLO de Cerquilho para demonstrar na volta. Retomar pontualmente às 1:30.","title":"Intervalo"},{"n":25,"img":"s-25.jpg","notes":"1:30 – A aba CRONOGRAMA da planilha monta estas datas sozinha: basta informar a data de início, a produtividade (o Painel do Gestor regional usa 150 bens por dia) e o número de duplas. Os dias das etapas podem ser ajustados nas células amarelas. As datas pulam fins de semana. O Status muda sozinho: Agendado, Em andamento, Atrasado ou Concluído (quando se preenche “Concluído em”). Há também um quadro por dependência, com a data prevista para cada sala. O Manual pede inventário ao menos uma vez por ano ou quando solicitado.","title":"Oito etapas, com data marcada"},{"n":26,"img":"s-26.jpg","notes":"1:34 – Manual, páginas 8, 9 e 29. A contagem é feita no mínimo em dupla: um identifica e conta, o outro registra no relatório ou na planilha. Trena de pelo menos 3 metros para medir bancos e armários (a medida ajuda a identificar o bem certo: “banco 2,50 x 0,90”). Ter a lista de todas as dependências para nenhum ambiente ficar de fora; a planilha já traz essa lista na aba CRONOGRAMA.","title":"Antes de contar, prepare"},{"n":27,"img":"s-27.jpg","notes":"1:37 – Erro mais comum: pegar a lista e procurar só o que está nela. Assim, os bens que não estão cadastrados passam despercebidos. Método: entrar na sala, observar tudo, identificar cada bem controlável, conferir a etiqueta e só então comparar com o relatório. Terminar uma dependência antes de passar para a próxima.","title":"Olhe o ambiente primeiro. Depois confira o relatório."},{"n":28,"img":"s-28.jpg","notes":"1:40 – Na planilha, a coluna “Status do inventário” é uma lista. Ao escolher, a coluna “Ação necessária” escreve sozinha o que fazer e qual formulário usar; o código do FOR.AI.02 aparece na coluna ao lado. Outras opções da lista: Etiqueta divergente (reimprimir e conferir código), Descrição divergente (14.6), Danificado/Inservível (avaliar conserto ou baixa) e Saiu – vendido/transferido/descartado (providenciar baixa com documento). Nunca invente numeração de etiqueta e nunca troque etiqueta entre bens.","title":"O que encontrou? Como marcar"},{"n":29,"img":"s-29.jpg","notes":"1:44 – Os códigos e as descrições são reais (relatório SIGA de Cerquilho, localidade BR 22-2194); as situações são inventadas para treino. Perguntar ao grupo, linha por linha, “como vocês marcariam?” antes de mostrar a resposta. Depois, mostrar na planilha EXEMPLO: filtrar a localidade BR 22-2194 na aba INÍCIO e marcar essas mesmas situações ao vivo. O FOR.AI.02 e a lista de etiquetas se montam na hora.","title":"A dupla entrou no salão…"},{"n":30,"img":"s-30.jpg","notes":"1:48 – Resumo Prático, item 7. Quando a dupla encontra um bem sem etiqueta, com etiqueta rasgada ou ilegível, ou com número diferente, marca na planilha e o bem vai automaticamente para a aba ETIQUETAS, com código, descrição, dependência e ação. Essa lista é enviada para a reimpressão (Formulário 14.9 – etiquetas). Depois de afixar, marcar “Sim” e a data na própria aba.","title":"Cuidado com as etiquetas"},{"n":31,"img":"s-31.jpg","notes":"1:51 – Demonstração ao vivo. 1) No SIGA, emitir o Relatório de Bens Imobilizado da localidade e exportar para Excel. 2) No arquivo exportado, selecionar tudo (canto superior esquerdo), copiar e colar na célula A1 da aba COLAR_SIGA. 3) Voltar à aba INÍCIO e ver a confirmação. Cuidados: colar o relatório ANTES de começar a conferência e não colar outro por cima depois; para reutilizar a planilha em outra igreja, usar “Limpar tudo” na aba COLAR_SIGA ou partir de uma cópia nova do modelo. Limite: até 2.000 bens por planilha.","title":"Três passos para começar"},{"n":32,"img":"s-32.jpg","notes":"1:55 – Mostrar cada aba rapidamente na planilha EXEMPLO. No INVENTÁRIO, só as colunas amarelas L a Q são preenchidas: status, dependência encontrada, estado de conservação, observação, data e quem conferiu. O DASHBOARD mostra bens conferidos, pendentes, não encontrados, etiquetas a imprimir, bens fora da dependência e não cadastrados, além da linha “Resumo para o Cronograma Regional”, que é enviada ao gestor para alimentar o Painel do Gestor.","title":"O que cada aba faz"},{"n":33,"img":"s-33.jpg","notes":"1:58 – Dividir em grupos de 3 ou 4. Respostas esperadas: (1) ventilador sem cadastro → aba NÃO_CADASTRADOS, pesquisar origem (compra, doação ou transferência), FOR.AI.02 código 02; regularizar com 14.2 (+ FOR.AI.01 se doação). (2) banco em outra dependência → “Encontrado – Em outra dependência”, FOR.AI.02 código 03 + 14.6. (3) microfone sumido → “Não encontrado”, pesquisar com Ministério e porteiros, FOR.AI.02 código 01; se confirmada perda, 14.3. (4) órgão de terceiro → não entra no cadastro; controlar separadamente e anotar na observação. Assinaturas do FOR.AI.02: Ancião/Diácono, Cooperador do Ofício Ministerial e Responsável pelo Imobilizado.","title":"Inventário da galeria"},{"n":34,"img":"s-34.jpg","notes":"2:02 – Ler a situação e deixar o grupo responder antes de apontar a resposta. Atenção à mudança: a doação agora é FOR.AI.01 + 14.2 (não mais 14.1). Fechar o bloco prático e passar para gestão.","title":"Teste rápido"},{"n":35,"img":"s-35.jpg","notes":"2:05 – Início do bloco motivacional e de gestão. Mensagem central: controlar não é desconfiar dos irmãos; é zelar pelo que foi consagrado a Deus. Um despenseiro é alguém que cuida do que não é seu, e por isso precisa ser fiel. Quando os controles funcionam, quem serve fica protegido, e a Administração presta contas com tranquilidade. Nas próximas telas, ferramentas simples de gestão para usar no dia a dia.","title":"Controle não é desconfiança. É cuidado."},{"n":36,"img":"s-36.jpg","notes":"2:08 – PDCA (Planejar, Fazer, Checar, Agir) é um ciclo simples de melhoria. Planejar: cronograma, duplas, relatório colado. Fazer: conferência com a regra de ouro. Checar: dashboard, lista de não encontrados, FOR.AI.02. Agir: regularizar com os formulários, afixar etiquetas e anotar o que melhorar no próximo inventário (ex.: dependência que ficou para trás, etiqueta que descola). O próprio Senhor Jesus ensinou a planejar antes de construir (Lucas 14:28).","title":"O ciclo do inventário"},{"n":37,"img":"s-37.jpg","notes":"2:11 – O 5S é uma ferramenta de organização de origem japonesa. Aplicada à Casa de Oração: Utilização (o que está parado e sem uso vai para avaliação de conserto ou baixa); Ordem (cada bem na dependência certa, igual ao cadastro); Limpeza (etiqueta limpa, visível, no mesmo lugar em bens iguais – ex.: lateral direita dos bancos); Padrão (todas as Casas de Oração usam a mesma planilha e o mesmo método); Disciplina (fechamento mensal no 14.8). Organização também é testemunho.","title":"Cinco sensos nas dependências"},{"n":38,"img":"s-38.jpg","notes":"2:14 – 5W2H: sete perguntas que transformam uma intenção em plano (What, Why, Where, When, Who, How, How much). Exemplo com dados reais de Nova Cerquilho: 118 bens em 7 dependências (Templo, Copa, Salão de culto, EBI, Fundo bíblico e dois sanitários). Sugestão: cada Casa de Oração preenche o seu 5W2H na reunião com o Ministério (etapa 1 do cronograma).","title":"Um plano em uma página"},{"n":39,"img":"s-39.jpg","notes":"2:16 – Indicadores simples, com metas sugeridas (não são do Manual; combinar com a Administração). O dashboard da planilha mostra % concluído, não encontrados e etiquetas a imprimir automaticamente. O 14.8 em dia, mês a mês, é o indicador de disciplina. Mostrar o DASHBOARD da planilha exemplo.","title":"O que não se mede, se perde"},{"n":40,"img":"s-40.jpg","notes":"2:18 – Quem tem rotina não precisa “correr atrás” no fim do ano. No dia: registrar cada entrada e saída quando acontece. Todo mês: 14.8 e conciliação. A cada semestre (sugestão): sortear uma dependência e conferir; isso mantém o hábito e mostra problemas cedo. Todo ano: inventário completo com FOR.AI.02 e Ata 14.5, como pede o Manual.","title":"Calendário dos controles"},{"n":41,"img":"s-41.jpg","notes":"2:20 – Segregação de funções, em palavras simples: a mesma pessoa não deve contar, conferir e aprovar sozinha. As duplas contam; o Responsável pelo Imobilizado revisa e pesquisa; o Ministério (Ancião/Diácono e Cooperador do Ofício Ministerial) assina o FOR.AI.02 e a Ata 14.5; a Administração lança no sistema. Cada um protege o trabalho do outro.","title":"Quem faz, quem confere, quem aprova"},{"n":42,"img":"s-42.jpg","notes":"2:22 – Recapitular o caminho completo, do relatório colado às assinaturas. Entregar a cada Casa de Oração: a planilha modelo, o FOR.AI.01 e o FOR.AI.02 impressos e o Resumo Prático. Combinar a data de devolução do “Resumo para o Cronograma Regional” (aba DASHBOARD) ao gestor. Abrir para últimas perguntas.","title":"Checklist do voluntário"},{"n":43,"img":"s-43.jpg","notes":"2:26 – Mensagem final de motivação. O trabalho no Patrimônio muitas vezes é silencioso e ninguém vê: contar bancos, conferir etiquetas, procurar um microfone. Mas é feito para o Senhor. Hebreus 6:10 lembra que Deus não se esquece da obra e do trabalho de amor feito para com o seu nome. Agradecer a dedicação de cada um.","title":"“E tudo quanto fizerdes, fazei-o de todo o coração, como ao Senhor.”"},{"n":44,"img":"s-44.jpg","notes":"2:28 – Agradecer, lembrar onde estão os materiais (planilha modelo, FOR.AI.01, FOR.AI.02, Resumo Prático) e o canal de contato do Patrimônio – Bens Móveis da Administração. Convidar um irmão do Ministério para a oração de encerramento, agradecendo a Deus pelo trabalho realizado.","title":"Deus abençoe!"}];
+const STATUS = [
+ ["Encontrado – OK","Nenhuma ação","—",""],
+ ["Encontrado – Sem etiqueta","Imprimir etiqueta e afixar no bem","Etiqueta (14.9)",""],
+ ["Encontrado – Etiqueta danificada/ilegível","Reimprimir etiqueta e substituir","Etiqueta (14.9)",""],
+ ["Encontrado – Etiqueta divergente","Conferir código no sistema e reimprimir etiqueta","FOR.AI.02 + 14.6","03"],
+ ["Encontrado – Em outra dependência","Alterar dependência no cadastro","FOR.AI.02 + 14.6","03"],
+ ["Encontrado – Descrição divergente","Alterar descrição no cadastro","FOR.AI.02 + 14.6","03"],
+ ["Encontrado – Danificado/Inservível","Avaliar conserto (14.7) ou baixa (14.3)","FOR.AI.02 + 14.7/14.3","04"],
+ ["Não encontrado","Pesquisar destino com o Ministério e registrar a divergência","FOR.AI.02","01"],
+ ["Em manutenção/Emprestado","Comprovar a saída temporária","14.7","04"],
+ ["Saiu (vendido/transferido/descartado)","Providenciar baixa ou transferência com documento","FOR.AI.02 + 14.3","01"]
+];
+
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const BRL = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const NUM = new Intl.NumberFormat("pt-BR");
+const brl = n => BRL.format(n||0);
+const brlc = n => { n=n||0; if (n>=1e6) return "R$ "+(n/1e6).toLocaleString("pt-BR",{maximumFractionDigits:2})+" mi"; if (n>=1e3) return "R$ "+(n/1e3).toLocaleString("pt-BR",{maximumFractionDigits:1})+" mil"; return brl(n); };
+const pct = x => (x*100).toLocaleString("pt-BR",{maximumFractionDigits:1})+"%";
+const norm = s => String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2600); }
+function kpi(l,v,s){ return `<div class="kpi"><span class="l">${esc(l)}</span><span class="v">${esc(v)}</span>${s?`<span class="s">${esc(s)}</span>`:""}</div>`; }
+function bars(el, items, fmt, cls){ const max=Math.max(1,...items.map(i=>i[1])); el.innerHTML = items.length? items.map(([n,v,extra])=>`<div class="bar"><span class="n" title="${esc(n)}">${esc(n)}</span><span class="t"><i class="${cls||""}" style="width:${Math.max(0.5,v/max*100)}%"></i></span><span class="v">${esc(fmt(v))}${extra?` <span class="muted small">${esc(extra)}</span>`:""}</span></div>`).join("") : `<p class="muted">Sem dados.</p>`; }
+function iso(d){ return d.toISOString().slice(0,10); }
+function parseD(s){ if(!s) return null; const [y,m,d]=s.split("-").map(Number); return new Date(Date.UTC(y,m-1,d)); }
+function fmtD(s){ if(!s) return "—"; const [y,m,d]=s.split("-"); return `${d}/${m}/${y}`; }
+function addWorkdays(s, n){ let d=parseD(s); if(!d) return null; while([0,6].includes(d.getUTCDay())) d.setUTCDate(d.getUTCDate()+1); let k=n; while(k>0){ d.setUTCDate(d.getUTCDate()+1); if(![0,6].includes(d.getUTCDay())) k--; } return iso(d); }
+const TODAY = (()=>{ const t=new Date(); return iso(new Date(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate()))); })();
+const store = { ok:(()=>{ try{ localStorage.setItem("_t","1"); localStorage.removeItem("_t"); return true; }catch(e){ return false; } })(), get(k){ try{return localStorage.getItem(k);}catch(e){return null;} }, set(k,v){ try{ if(v) localStorage.setItem(k,v); else localStorage.removeItem(k); }catch(e){} } };
+
+/* ---------- dados do próprio usuário (sem dados de exemplo) ---------- */
+function aggLocs(rows){ const m=new Map(); rows.forEach(r=>{ const o=m.get(r[2])||{loc:r[2],bens:0,va:0,vat:0,dep:0}; o.bens++; o.va+=r[5]; o.vat+=r[7]; if(/deprec/i.test(r[8])) o.dep++; m.set(r[2],o); }); return [...m.values()].map(o=>({...o,va:Math.round(o.va*100)/100,vat:Math.round(o.vat*100)/100})).sort((a,b)=>a.loc.localeCompare(b.loc,"pt-BR")); }
+const EX = {fonte: CERQ.fonte, locs: aggLocs(CERQ.rows), prod:150, duplas:1, prazo:"", prog:{}};
+let MY = null;            // cronograma salvo do usuário (só ele vê)
+let ROWS = null;          // relatório carregado nesta visita (fica só no navegador)
+let MODE = "ex";          // "ex" = nenhum relatório carregado, "my" = dados do usuário
+let DB=null, UID=null, DL=null, SAVE_KIND="none";
+const docId = loc => loc.replace(/[^A-Za-z0-9_-]/g,"_");
+const cur = () => MODE==="my" && MY ? MY : EX;
+const editable = () => MODE==="my" && !!MY;
+let EXINV = {};           // marcações do modelo (só nesta visita)
+let MYINV = {};           // marcações do usuário, por localidade
+const DIRTY = new Set();  // localidades com marcações ainda não gravadas
+const curRows = () => (MODE==="my" && MY) ? (ROWS||[]) : CERQ.rows;
+const curInv = () => (MODE==="my" && MY) ? MYINV : EXINV;
+
+/* armazenamento privado do usuário: banco do portal (data/users/<id>) ou, sem ele, este navegador */
+const PS = {
+  path: id => "data/users/"+UID+"/"+id,
+  async get(id){ if(SAVE_KIND==="db"){ const s=await DB.doc(PS.path(id)).get(); return s.exists? s.data():null; } const r=store.get("p:"+id); return r? JSON.parse(r):null; },
+  async set(id,data){ if(SAVE_KIND==="db") return DB.doc(PS.path(id)).set(data); if(SAVE_KIND==="local") store.set("p:"+id, JSON.stringify(data)); },
+  async del(id){ if(SAVE_KIND==="db") return DB.doc(PS.path(id)).delete(); store.set("p:"+id,""); }
+};
+let loadedReport = null;
+async function loadMyRows(){
+  if(!MY || !MY.chunks || loadedReport===MY.reportId) return;
+  loadedReport = MY.reportId; const all=[];
+  for(let i=0;i<MY.chunks;i++){ try{ const d=await PS.get("bens"+i); if(d&&d.rows) all.push(...d.rows); }catch(e){} }
+  ROWS = all; refreshAll();
+}
+function setInvFromDocs(list){
+  const n={}; list.forEach(d=>{ if(d && d.loc) n[docId(d.loc)] = {loc:d.loc, marks:d.marks||{}, nc:d.nc||[]}; });
+  Object.keys(MYINV).forEach(k=>{ if(DIRTY.has(k)) n[k]=MYINV[k]; });
+  MYINV=n; refreshAll();
+}
+
+(async()=>{
+  try{ DL = await window.claude?.use?.("downloads"); }catch(e){ DL=null; }
+  if(!DL) DL={ async save({filename,data}){ const b=data instanceof Blob?data:new Blob([data]); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),8000); } };
+  try{
+    DB = await window.claude?.use?.("db");
+    const user = await window.claude?.use?.("user");
+    UID = user ? await user.id() : null;
+  }catch(e){ DB=null; }
+  if (DB && UID){
+    SAVE_KIND="db";
+    DB.doc("data/users/"+UID+"/crono").onSnapshot(s=>{ if(s.exists){ MY=s.data(); if(MODE!=="ex-forced") MODE="my"; loadMyRows(); } else { MY=null; MODE="ex"; } refreshAll(); }, ()=>{});
+    DB.collection("data/users/"+UID).where("kind","==","inv").onSnapshot(snap=>setInvFromDocs(snap.docs.filter(d=>d.exists).map(d=>d.data())), ()=>{});
+  } else {
+    const raw=store.get("crono"); if(raw){ try{ MY=JSON.parse(raw); MODE="my"; SAVE_KIND="local"; }catch(e){} }
+    if (SAVE_KIND==="none") SAVE_KIND = store.ok ? "local" : "none";
+    if (SAVE_KIND==="local"){ const docs=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.startsWith("p:inv-")) docs.push(JSON.parse(localStorage.getItem(k))); } }catch(e){} setInvFromDocs(docs); loadMyRows(); }
+    refreshAll();
+  }
+})();
+async function saveMy(){
+  if(!MY) return;
+  MY.updatedAt=new Date().toISOString();
+  try{
+    if(SAVE_KIND==="db") await DB.doc("data/users/"+UID+"/crono").set(JSON.parse(JSON.stringify(MY)));
+    else if(SAVE_KIND==="local") store.set("crono",JSON.stringify(MY));
+    return true;
+  }catch(err){ toast(err?.code==="invalid_argument"?"Dados grandes demais para salvar":"Não foi possível salvar. Tente de novo."); return false; }
+}
+
+/* ---------- roteamento ---------- */
+const VIEWS=["inicio","materiais","apresentacao","manual","formularios","planilha","inventario","cronograma","dashboard","busca"];
+function show(v){
+  if(!VIEWS.includes(v)) v="inicio";
+  VIEWS.forEach(x=>{ const el=$("#v-"+x); if(el) el.hidden = x!==v; });
+  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current", a.dataset.v===v?"page":"false"));
+  if (v==="manual") renderManual();
+  window.scrollTo({top:0});
+}
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+
+/* ---------- carregar relatório do SIGA ---------- */
+function loadSheetJS(){ return new Promise((res,rej)=>{ if(window.XLSX) return res(); const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; s.onload=res; s.onerror=()=>rej(new Error("lib")); document.head.appendChild(s); }); }
+let srcMsg="";
+$("#sig-file").addEventListener("change",async e=>{
+  const f=e.target.files[0]; if(!f) return; srcMsg="Lendo o relatório…"; renderSrc();
+  try{
+    await loadSheetJS();
+    const wb=XLSX.read(await f.arrayBuffer(),{type:"array"}); const ws=wb.Sheets[wb.SheetNames[0]];
+    const A=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:""});
+    const h=A.findIndex(r=>r.some(c=>String(c).trim()==="Código") && r.some(c=>String(c).trim()==="Nome"));
+    if(h<0) throw new Error("Não achei o cabeçalho “Código / Nome”. Confira se é o Relatório de Bens Imobilizado do SIGA.");
+    const H=A[h].map(c=>String(c).trim()); const ix=n=>H.indexOf(n);
+    const I={c:ix("Código"),n:ix("Nome"),l:ix("Localidade"),ct:ix("Conta"),d:ix("Dependência"),va:ix("Vl. Aquisição"),vd:ix("Vl. Deprec."),vat:ix("Vl. Atual"),s:ix("Status")};
+    const numv=v=>typeof v==="number"? v : Number(String(v).replace(/\./g,"").replace(",","."))||0;
+    const rows=A.slice(h+1).filter(r=>String(r[I.c]).includes(" / ")).map(r=>[String(r[I.c]).trim(),String(r[I.n]).trim(),String(r[I.l]).trim()||"(sem localidade)",String(r[I.ct]).trim(),String(r[I.d]).trim()||"(NÃO INFORMADA)",numv(r[I.va]),numv(r[I.vd]),numv(r[I.vat]),String(r[I.s]).trim(),null]);
+    if(!rows.length) throw new Error("O relatório não tem bens listados.");
+    let pos=""; for(const r of A.slice(0,h)){ const i=r.findIndex(c=>String(c).trim()==="Data Posição"); if(i>=0){ pos=r.slice(i+1).find(c=>String(c).trim()!=="")||""; break; } }
+    let adm=""; for(const r of A.slice(0,h)){ const c=r.find(c=>/^ADM\s*-/i.test(String(c).trim())); if(c){ adm=String(c).trim(); break; } }
+    ROWS=rows;
+    const prev = MY || {prod:150,duplas:1,prazo:"",prog:{}};
+    // guarda a lista de bens em partes de até ~180 KB (limite por documento)
+    srcMsg="Salvando a lista de bens…"; renderSrc();
+    const chunks=[]; let curc=[], size=0;
+    rows.forEach(r=>{ const s=JSON.stringify(r).length+1; if(size+s>180000 && curc.length){ chunks.push(curc); curc=[]; size=0; } curc.push(r); size+=s; });
+    if(curc.length) chunks.push(curc);
+    let okRows=true;
+    try{ for(let i=0;i<chunks.length;i++) await PS.set("bens"+i,{kind:"bens",rows:chunks[i]}); for(let i=chunks.length;i<(prev.chunks||0);i++) await PS.del("bens"+i); }catch(err){ okRows=false; }
+    const rid=String(Date.now()); loadedReport=rid;
+    MY = {fonte:`${adm||f.name}${pos?` • data posição ${pos}`:""}`, locs:aggLocs(rows), prod:prev.prod||150, duplas:prev.duplas||1, prazo:prev.prazo||"", prog:prev.prog||{}, chunks: okRows? chunks.length:0, reportId: rid};
+    MODE="my"; $("#det-loc").value="";
+    const ok = await saveMy();
+    srcMsg = `${NUM.format(rows.length)} bens em ${MY.locs.length} localidade(s). ` + (SAVE_KIND==="none"||!ok ? "Atenção: nada pôde ser salvo nesta visualização." : okRows ? "A lista de bens e o cronograma ficaram salvos, e só você vê. Abra a aba Inventário para conferir." : "O cronograma foi salvo, mas a lista de bens não. Carregue o relatório de novo na próxima visita.");
+    refreshAll();
+  }catch(err){ srcMsg = err.message==="lib" ? "Não foi possível carregar o leitor de planilhas. Verifique a internet e tente de novo." : err.message; renderSrc(); }
+  e.target.value="";
+});
+let confirmDel=false;
+function renderSrc(){
+  const isEx = MODE!=="my" || !MY;
+  document.querySelectorAll(".src-card").forEach(card=>{
+    card.querySelector(".src-eyebrow").textContent = isEx ? "Nenhum relatório carregado" : "Seus dados • visíveis só para você";
+    card.querySelector(".src-fonte").textContent = isEx ? "Carregue o Relatório de Bens Imobilizado do SIGA da sua Administração" : MY.fonte;
+    let a = `<button type="button" class="btn primary" data-act="load">${MY?"Carregar relatório atualizado":"Carregar o relatório da minha Administração"}</button>`;
+    
+    if (MY && !isEx) a += confirmDel ? `<button type="button" class="btn" data-act="delok" style="color:var(--bad);border-color:var(--bad)">Confirmar: apagar meus dados</button><button type="button" class="btn" data-act="delno">Cancelar</button>` : `<button type="button" class="btn" data-act="del">Apagar meus dados</button>`;
+    card.querySelector(".src-actions").innerHTML = a;
+    card.querySelector(".src-msg").textContent = srcMsg || (isEx ? "Use o arquivo .xls ou .xlsx exportado do SIGA. O portal monta o inventário, o cronograma e o dashboard das suas localidades. Cada usuário vê apenas os próprios dados." : (ROWS ? "" : "Para os gráficos detalhados de bens, carregue o relatório de novo nesta visita: o portal guarda só o resumo por localidade e o cronograma."));
+  });
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest(".src-actions [data-act]"); if(!b) return;
+  const act=b.dataset.act; srcMsg="";
+  if(act==="load") $("#sig-file").click();
+  if(act==="ex"){ MODE="ex-forced"; }
+  if(act==="mine"){ MODE="my"; }
+  if(act==="del"){ confirmDel=true; }
+  if(act==="delno"){ confirmDel=false; }
+  if(act==="delok"){ confirmDel=false; try{ for(let i=0;i<(MY?.chunks||0);i++) await PS.del("bens"+i); for(const k of Object.keys(MYINV)) await PS.del("inv-"+k); if(SAVE_KIND==="db") await DB.doc("data/users/"+UID+"/crono").delete(); else store.set("crono",""); }catch(err){} MY=null; ROWS=null; MYINV={}; MODE="ex"; srcMsg="Seus dados foram apagados do portal."; }
+  if(MODE==="ex-forced") { refreshAll(); MODE="ex-forced"; return; }
+  refreshAll();
+});
+
+/* ---------- cronograma: cálculo ---------- */
+function diasDe(L,D){ return Math.max(1, Math.ceil(L.bens/(Math.max(1,Number(D.prod)||150)*Math.max(1,Number(D.duplas)||1)))); }
+function rowState(L, D){
+  D = D || cur();
+  const p = (D.prog||{})[docId(L.loc)] || {};
+  const dias = diasDe(L,D);
+  const tPrev = p.inicioPrev ? addWorkdays(p.inicioPrev, dias-1) : null;
+  let st="A agendar";
+  if (p.terminoReal) st="Concluído";
+  else if (p.inicioReal) st = (tPrev && TODAY>tPrev) ? "Atrasado" : "Em andamento";
+  else if (p.inicioPrev) st = (tPrev && TODAY>tPrev) ? "Atrasado" : "Agendado";
+  const a = invStats(L.loc, D===MY ? MYINV : EXINV);
+  const conf = a ? a.conf : (Number(p.conferidos)||0);
+  const nf = a ? a.nf : (Number(p.naoEnc)||0), etq = a ? a.etq : (Number(p.etiquetas)||0), nc = a ? a.nc : (Number(p.naoCad)||0);
+  if (a && !p.terminoReal && !p.inicioReal && a.conf>0) st = (tPrev && TODAY>tPrev) ? "Atrasado" : "Em andamento";
+  return {p, dias, tPrev, st, conf, nf, etq, nc, auto:!!a, pc: L.bens? Math.min(1,conf/L.bens):0};
+}
+const ST_CLASS = {"Concluído":"p-ok","Em andamento":"p-info","Agendado":"p-mut","Atrasado":"p-bad","A agendar":"p-warn"};
+const ST_ORDER = ["Concluído","Em andamento","Agendado","Atrasado","A agendar"];
+let cronoFilter="Todos";
+
+function refreshAll(){ renderSrc(); renderHomeKpis(); renderCrono(); renderDet(); renderInv(); if(typeof renderFind==="function") renderFind(); }
+function totals(D){
+  D = D || cur();
+  let bens=0, valor=0, conf=0, nf=0, etq=0, nc=0; const byS={}; ST_ORDER.forEach(s=>byS[s]={n:0,bens:0});
+  D.locs.forEach(L=>{ const r=rowState(L,D); bens+=L.bens; valor+=L.vat; conf+=Math.min(r.conf,L.bens); nf+=r.nf; etq+=r.etq; nc+=r.nc; byS[r.st].n++; byS[r.st].bens+=L.bens; });
+  return {bens,valor,conf,nf,etq,nc,byS};
+}
+function renderHomeKpis(){
+  const D = MY || EX; const t=totals(D); const lab = "Suas localidades";
+  $("#home-kpis").innerHTML = kpi(lab, NUM.format(D.locs.length), MY? "só você vê estes números" : "carregue o seu relatório do SIGA") + kpi("Bens a inventariar", NUM.format(t.bens)) + kpi("Valor atual", brlc(t.valor), brl(t.valor)) + kpi("Inventário conferido", pct(t.bens? t.conf/t.bens:0), `${t.byS["Concluído"].n} localidades concluídas`);
+}
+function renderCrono(){
+  const D=cur(); const t=totals(D); const ed=editable();
+  $("#crono-kpis").innerHTML = kpi("Bens conferidos", NUM.format(t.conf), `de ${NUM.format(t.bens)} (${pct(t.bens?t.conf/t.bens:0)})`) + kpi("Concluídas", NUM.format(t.byS["Concluído"].n), `de ${D.locs.length} localidades`) + kpi("Atrasadas", NUM.format(t.byS["Atrasado"].n), "término previsto já passou") + kpi("Não encontrados", NUM.format(t.nf), `${NUM.format(t.etq)} etiquetas • ${NUM.format(t.nc)} não cadastrados`);
+  $("#crono-chips").innerHTML = ["Todos",...ST_ORDER].map(c=>`<button type="button" class="chip" data-f="${esc(c)}" aria-pressed="${c===cronoFilter}">${esc(c)}${c!=="Todos"?` (${t.byS[c].n})`:""}</button>`).join("");
+  [["#p-prod","prod"],["#p-duplas","duplas"],["#p-prazo","prazo"]].forEach(([s,k])=>{ const el=$(s); el.disabled=!ed; if(document.activeElement!==el) el.value = D[k]??""; });
+  const q=norm($("#crono-q").value);
+  const rows = D.locs.filter(L=>{ const r=rowState(L,D); return (cronoFilter==="Todos"||r.st===cronoFilter) && (!q || norm(L.loc).includes(q)); });
+  $("#crono-body").innerHTML = rows.map(L=>{ const r=rowState(L,D); return `<tr class="click" tabindex="0" data-loc="${esc(L.loc)}"><td style="white-space:nowrap"><b>${esc(L.loc)}</b>${r.p.nome?`<br><span class="small muted">${esc(r.p.nome)}</span>`:""}</td><td class="num">${NUM.format(L.bens)}</td><td class="num">${brl(L.vat)}</td><td class="num">${r.dias}</td><td>${esc(r.p.resp||"—")}</td><td>${fmtD(r.p.inicioPrev)}</td><td>${fmtD(r.tPrev)}</td><td>${fmtD(r.p.terminoReal)}</td><td><div class="row" style="gap:8px;flex-wrap:nowrap"><span class="progress"><i style="width:${r.pc*100}%"></i></span><span class="small">${pct(r.pc)}</span></div></td><td><span class="pill ${ST_CLASS[r.st]}">${r.st}</span></td></tr>`; }).join("") || `<tr><td colspan="10" class="muted">${D.locs.length? "Nenhuma localidade com esse filtro." : "Nenhum relatório carregado. Use o botão “Carregar o relatório da minha Administração”, acima."}</td></tr>`;
+  $("#crono-mode").textContent = !ed ? "Carregue o relatório da sua Administração para montar e registrar o seu cronograma." : SAVE_KIND==="db" ? "Clique em uma localidade para registrar nome da igreja, datas, responsável e resultado da conferência. Fica salvo e só você vê." : SAVE_KIND==="local" ? "Salvo apenas neste navegador e visível só para você." : "Atenção: nesta visualização o cronograma não é salvo.";
+}
+$("#crono-chips").addEventListener("click",e=>{ const b=e.target.closest("[data-f]"); if(!b) return; cronoFilter=b.dataset.f; renderCrono(); });
+$("#crono-q").addEventListener("input",renderCrono);
+[["#p-prod","prod",v=>Math.max(10,Math.round(Number(v)||150))],["#p-duplas","duplas",v=>Math.max(1,Math.round(Number(v)||1))],["#p-prazo","prazo",v=>v||""]].forEach(([s,k,f])=>$(s).addEventListener("change",async e=>{ if(!editable()) return; MY[k]=f(e.target.value); refreshAll(); if(await saveMy()) toast("Salvo"); }));
+$("#crono-body").addEventListener("click",e=>{ const tr=e.target.closest("tr[data-loc]"); if(tr) openLoc(tr.dataset.loc); });
+$("#crono-body").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const tr=e.target.closest("tr[data-loc]"); if(tr) openLoc(tr.dataset.loc); } });
+
+const FIELDS=[["nome","Nome da Casa de Oração","text"],["resp","Responsável","text"],["contato","Contato","text"],["inicioPrev","Início previsto","date"],["inicioReal","Início real","date"],["terminoReal","Término real","date"],["conferidos","Bens conferidos","number"],["naoEnc","Não encontrados","number"],["etiquetas","Etiquetas a imprimir","number"],["naoCad","Bens não cadastrados","number"]];
+function openLoc(loc){
+  const D=cur(); const L=D.locs.find(x=>x.loc===loc); if(!L) return; const r=rowState(L,D); const ro=!editable();
+  const ov=$("#ov");
+  ov.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="mh"><div><p class="eyebrow">${NUM.format(L.bens)} bens • ${brl(L.vat)} de valor atual</p><h2 id="mt">${esc(L.loc)}${r.p.nome?` – ${esc(r.p.nome)}`:""}</h2></div><button class="btn" type="button" data-close>Fechar</button></div>
+  <form class="mb" id="locform"><div class="row"><span class="pill ${ST_CLASS[r.st]}">${r.st}</span><span class="small muted">Dias estimados: ${r.dias} • Término previsto: ${fmtD(r.tPrev)}</span></div>
+  <div class="row"><button class="btn" type="button" id="go-inv">Abrir a conferência desta localidade</button>${r.auto?`<span class="small muted">Conferidos, não encontrados, etiquetas e não cadastrados vêm da aba Inventário.</span>`:""}</div>
+  <div class="grid g3">${FIELDS.map(([k,l,t])=>{ const autoV = r.auto && {conferidos:r.conf,naoEnc:r.nf,etiquetas:r.etq,naoCad:r.nc}[k]; const v = autoV!==undefined && autoV!==false ? autoV : (r.p[k]??""); return `<label class="fl">${l}<input class="f" id="f-${k}" name="${k}" type="${t}" ${t==="number"?'min="0" step="1"':""} value="${esc(v)}" ${ro||(r.auto&&t==="number")?"disabled":""}></label>`; }).join("")}</div>
+  <label class="fl">Observação<textarea class="f" id="f-obs" name="obs" rows="3" ${ro?"disabled":""}>${esc(r.p.obs||"")}</textarea></label>
+  ${ro?`<p class="small muted">Carregue o seu relatório para registrar o cronograma.</p>`:`<div class="row"><button class="btn primary" type="submit">Salvar</button><span class="small muted">${r.p.updatedAt?`Última alteração: ${new Date(r.p.updatedAt).toLocaleString("pt-BR")}`:"Ainda sem registros para esta localidade."}</span></div>`}
+  </form></div>`;
+  ov.hidden=false; ov.querySelector("[data-close]").focus();
+  ov.querySelector("#go-inv").addEventListener("click",()=>{ closeOv(); location.hash="inventario"; show("inventario"); openInv(L.loc); });
+  ov.querySelector("#locform").addEventListener("submit",async ev=>{
+    ev.preventDefault(); if(!editable()) return;
+    const fd=new FormData(ev.target); const data={};
+    FIELDS.forEach(([k,,t])=>{ const v=(fd.get(k)||"").toString().trim(); data[k]= t==="number" ? (v===""?"":Math.max(0,Math.round(Number(v)||0))) : v; });
+    data.obs=(fd.get("obs")||"").toString(); data.updatedAt=new Date().toISOString();
+    if (data.conferidos!=="" && data.conferidos> L.bens) { toast("Bens conferidos não pode passar de "+L.bens); return; }
+    MY.prog = MY.prog||{}; MY.prog[docId(L.loc)] = data;
+    if(await saveMy()){ closeOv(); toast("Cronograma atualizado"); refreshAll(); }
+  });
+}
+function closeOv(){ const ov=$("#ov"); ov.hidden=true; ov.innerHTML=""; }
+$("#ov").addEventListener("click",e=>{ if(e.target.id==="ov"||e.target.closest("[data-close]")) closeOv(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("#ov").hidden) closeOv(); });
+
+/* ---------- dashboard ---------- */
+function renderDet(){
+  const isEx = MODE!=="my" || !MY;
+  const rowsAll = isEx ? CERQ.rows : (ROWS || []);
+  const D = isEx ? EX : MY;
+  const sel=$("#det-loc"); const locs=D.locs.map(l=>l.loc); const curv=sel.value;
+  sel.innerHTML = `<option value="">Todas (${locs.length})</option>`+locs.map(l=>`<option ${l===curv?"selected":""}>${esc(l)}</option>`).join("");
+  const LS = D.locs.filter(l=>!sel.value || l.loc===sel.value);
+  const va=LS.reduce((s,l)=>s+l.va,0), vat=LS.reduce((s,l)=>s+l.vat,0), nb=LS.reduce((s,l)=>s+l.bens,0), dep=LS.reduce((s,l)=>s+(l.dep||0),0);
+  $("#det-kpis").innerHTML = kpi("Bens", NUM.format(nb), sel.value||"todas as localidades") + kpi("Valor de aquisição", brlc(va), brl(va)) + kpi("Valor atual", brlc(vat), brl(vat)) + kpi("Depreciação acumulada", pct(va? (va-vat)/va : 0), `${NUM.format(dep)} bens totalmente depreciados`);
+  const R = rowsAll.filter(r=>!sel.value || r[2]===sel.value);
+  const g=(idx,val)=>{ const m=new Map(); R.forEach(r=>{ const k=r[idx]||"(não informado)"; const o=m.get(k)||[0,0]; o[0]++; o[1]+=r[val]; m.set(k,o); }); return m; };
+  const none = `<p class="muted">Carregue o relatório nesta visita para ver este gráfico.</p>`;
+  if (R.length){
+    bars($("#det-dep"), [...g(4,7)].sort((a,b)=>b[1][1]-a[1][1]).slice(0,12).map(([k,o])=>[k,o[1],NUM.format(o[0])+" bens"]), brlc, "gold");
+    bars($("#det-conta"), [...g(3,7)].sort((a,b)=>b[1][0]-a[1][0]).map(([k,o])=>["Conta "+k,o[0],brlc(o[1])]), v=>NUM.format(v));
+    bars($("#det-st"), [...g(8,7)].sort((a,b)=>b[1][0]-a[1][0]).map(([k,o])=>[k,o[0],brlc(o[1])]), v=>NUM.format(v)+" bens", "ok");
+    $("#det-top").innerHTML = [...R].sort((a,b)=>b[7]-a[7]).slice(0,10).map(r=>`<tr><td style="white-space:nowrap">${esc(r[0])}</td><td>${esc(r[1])}<br><span class="small muted">${esc(r[4])}</span></td><td class="num">${brl(r[7])}</td></tr>`).join("");
+  } else { ["#det-dep","#det-conta","#det-st"].forEach(s=>$(s).innerHTML=none); $("#det-top").innerHTML=`<tr><td colspan="3">${none}</td></tr>`; }
+  $("#det-locs").innerHTML = !D.locs.length ? `<tr><td colspan="7" class="muted">Nenhum relatório carregado.</td></tr>` : [...D.locs].sort((a,b)=>b.vat-a.vat).map(o=>{ const r=rowState(o,D); return `<tr><td>${esc(o.loc)}${r.p.nome?` <span class="small muted">${esc(r.p.nome)}</span>`:""}</td><td class="num">${NUM.format(o.bens)}</td><td class="num">${brl(o.va)}</td><td class="num">${brl(o.vat)}</td><td class="num">${pct(o.va?(o.va-o.vat)/o.va:0)}</td><td class="num">${NUM.format(o.dep||0)}</td><td><span class="pill ${ST_CLASS[r.st]}">${r.st}</span> <span class="small">${pct(r.pc)}</span></td></tr>`; }).join("");
+}
+$("#det-loc").addEventListener("change",renderDet);
+
+/* ---------- inventário bem a bem ---------- */
+const ST_ETQ = [0,1,1,1,0,0,0,0,0,0];
+const ST_CAT = ["Encontrado","Encontrado","Encontrado","Encontrado","Encontrado","Encontrado","Encontrado","Não encontrado","Fora do local","Não encontrado"];
+const QUICK = [[0,"Encontrado"],[1,"Sem etiqueta"],[2,"Etiqueta danificada"],[4,"Outra dependência"],[7,"Não encontrado"]];
+const ESTADOS = ["Bom","Regular","Ruim","Inservível"];
+const mkKey = cod => String(cod).replace(/[^A-Za-z0-9]/g,"_");
+function invStats(loc, INV){
+  const iv = (INV||{})[docId(loc)]; if(!iv) return null;
+  const ms = Object.values(iv.marks||{}).filter(m=>m && m.s!==undefined && m.s!==null && m.s!=="");
+  if(!ms.length && !(iv.nc||[]).length) return null;
+  return { conf: ms.length, nf: ms.filter(m=>ST_CAT[m.s]==="Não encontrado").length, etq: ms.filter(m=>ST_ETQ[m.s]).length, nc: (iv.nc||[]).reduce((s,x)=>s+(Number(x.qtd)||1),0) };
+}
+let IVLOC = null, ivTab = "bens", ivFilter = "Pendentes", ivShow = 60, ivKeep = new Set();
+const timers = {};
+function invOf(loc){ const INV=curInv(); const k=docId(loc); if(!INV[k]) INV[k]={loc, marks:{}, nc:[]}; return INV[k]; }
+function queueSave(loc){
+  if(!editable()) return; const k=docId(loc); DIRTY.add(k);
+  clearTimeout(timers[k]); timers[k]=setTimeout(async()=>{
+    const iv=MYINV[k]; if(!iv) return;
+    try{ await PS.set("inv-"+k, {kind:"inv", loc:iv.loc, marks:iv.marks, nc:iv.nc, updatedAt:new Date().toISOString()}); DIRTY.delete(k); }
+    catch(err){ toast(err?.code==="invalid_argument" ? "Esta localidade tem dados demais para salvar" : "Não foi possível salvar a última marcação"); }
+  }, 700);
+}
+function findLoc(q){
+  const D=cur(); const n=norm(q).replace(/^br\s*/,"").trim(); if(!n) return null;
+  return D.locs.find(l=>norm(l.loc)===norm(q)) || D.locs.find(l=>norm(l.loc).replace(/^br\s*/,"")===n) || D.locs.find(l=>norm(l.loc).includes(n)) || D.locs.find(l=>norm(((D.prog||{})[docId(l.loc)]||{}).nome||"").includes(n)) || null;
+}
+function openInv(loc){ IVLOC=loc; ivShow=60; ivKeep=new Set(); ivFilter="Pendentes"; $("#iv-dep").value=""; $("#iv-q").value=""; $("#iv-code").value=loc; renderInv(); $("#iv-panel").scrollIntoView({block:"start"}); }
+$("#iv-go").addEventListener("click",()=>{ const L=findLoc($("#iv-code").value); if(L) openInv(L.loc); else { $("#iv-hint").textContent="Não encontrei essa igreja no relatório carregado. Confira o código (ex.: 22-2194)."; } });
+$("#iv-code").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("#iv-go").click(); } });
+$("#iv-code").addEventListener("change",()=>{ const L=cur().locs.find(l=>l.loc===$("#iv-code").value); if(L) openInv(L.loc); });
+$("#iv-tabs").addEventListener("click",e=>{ const b=e.target.closest("[data-t]"); if(!b) return; ivTab=b.dataset.t; renderInv(); });
+$("#iv-filter").addEventListener("click",e=>{ const b=e.target.closest("[data-f]"); if(!b) return; ivFilter=b.dataset.f; ivShow=60; ivKeep=new Set(); renderInv(); });
+$("#iv-dep").addEventListener("change",()=>{ ivShow=60; ivKeep=new Set(); renderInv(); });
+$("#iv-q").addEventListener("input",()=>{ ivShow=60; clearTimeout(renderInv._t); renderInv._t=setTimeout(renderInv,200); });
+$("#iv-more").addEventListener("click",()=>{ ivShow+=60; renderInv(); });
+
+function itemsOf(loc){ return curRows().filter(r=>r[2]===loc); }
+function renderInv(){
+  const D=cur();
+  $("#iv-list").innerHTML = D.locs.map(l=>{ const nm=((D.prog||{})[docId(l.loc)]||{}).nome; return `<option value="${esc(l.loc)}">${esc(nm?nm+" • ":"")}${NUM.format(l.bens)} bens</option>`; }).join("");
+  const rowsAvail = curRows().length>0;
+  $("#iv-hint").textContent = !rowsAvail && MODE==="my" ? "Carregando a lista de bens salva…" : (D.locs.length ? `${D.locs.length} localidade(s) no seu relatório. Digite o código ou escolha na lista.` : "Carregue o relatório do SIGA da sua Administração (botão acima) para ver os bens de cada igreja.");
+  if(!IVLOC || !D.locs.find(l=>l.loc===IVLOC)){ $("#iv-panel").hidden=true; return; }
+  $("#iv-panel").hidden=false;
+  const L=D.locs.find(l=>l.loc===IVLOC); const iv=invOf(IVLOC); const items=itemsOf(IVLOC);
+  const nm=((D.prog||{})[docId(L.loc)]||{}).nome;
+  $("#iv-eyebrow").textContent = "Sua Administração" + ` • ${NUM.format(L.bens)} bens • ${brl(L.vat)}`;
+  $("#iv-title").textContent = L.loc + (nm? " – "+nm : "");
+  const s = invStats(IVLOC, curInv()) || {conf:0,nf:0,etq:0,nc:0};
+  $("#iv-kpis").innerHTML = kpi("Conferidos", NUM.format(s.conf), `de ${NUM.format(items.length)} (${pct(items.length? s.conf/items.length:0)})`) + kpi("Pendentes", NUM.format(Math.max(0,items.length-s.conf))) + kpi("Não encontrados", NUM.format(s.nf), "FOR.AI.02 código 01") + kpi("Etiquetas a imprimir", NUM.format(s.etq), `${NUM.format(s.nc)} bens não cadastrados`);
+  $("#iv-bar").style.width = (items.length? s.conf/items.length*100:0)+"%";
+  document.querySelectorAll("#iv-tabs [data-t]").forEach(b=>{ b.setAttribute("aria-pressed", b.dataset.t===ivTab); const extra={etq:s.etq, div:null, nc:(iv.nc||[]).length}[b.dataset.t]; });
+  ["bens","etq","div","nc"].forEach(t=>$("#iv-t-"+t).hidden = t!==ivTab);
+  $("#iv-mode").textContent = !editable() ? "Carregue o seu relatório para salvar as marcações." : SAVE_KIND==="db" ? "Cada marcação é salva na hora e só você vê. Se a dupla usar dois aparelhos, entrem com a mesma conta." : SAVE_KIND==="local" ? "As marcações ficam salvas só neste navegador." : "Atenção: nesta visualização as marcações não são salvas.";
+  const deps=[...new Set(items.map(r=>r[4]))].sort();
+  const dsel=$("#iv-dep"), dv=dsel.value; dsel.innerHTML=`<option value="">Todas (${deps.length})</option>`+deps.map(d=>`<option ${d===dv?"selected":""}>${esc(d)}</option>`).join("");
+  $("#iv-deps").innerHTML = deps.map(d=>`<option value="${esc(d)}">`).join("");
+  if(ivTab==="bens") renderItems(items, iv, deps);
+  if(ivTab==="etq") renderEtq(items, iv);
+  if(ivTab==="div") renderDiv(items, iv);
+  if(ivTab==="nc") renderNc(iv);
+}
+function markOf(iv,r){ return iv.marks[mkKey(r[0])] || {}; }
+function renderItems(items, iv, deps){
+  const ae=document.activeElement; if(!renderItems.force && ae && $("#iv-items").contains(ae) && ["INPUT","SELECT"].includes(ae.tagName)) return;
+  renderItems.force=false;
+  const counts={Pendentes:0,Conferidos:0,"Não encontrados":0,Etiquetas:0,Todos:items.length};
+  items.forEach(r=>{ const m=markOf(iv,r); if(m.s===undefined||m.s===null||m.s==="") counts.Pendentes++; else { counts.Conferidos++; if(ST_CAT[m.s]==="Não encontrado") counts["Não encontrados"]++; if(ST_ETQ[m.s]) counts.Etiquetas++; } });
+  $("#iv-filter").innerHTML = Object.keys(counts).map(c=>`<button type="button" class="chip" data-f="${esc(c)}" aria-pressed="${c===ivFilter}">${esc(c)} (${counts[c]})</button>`).join("");
+  const dep=$("#iv-dep").value, q=norm($("#iv-q").value);
+  const list = items.filter(r=>{ const m=markOf(iv,r); const has=!(m.s===undefined||m.s===null||m.s==="");
+    if(dep && r[4]!==dep) return false; if(q && !norm(r[0]+" "+r[1]).includes(q) && !codeMatches(r,$("#iv-q").value)) return false; if(ivKeep.has(mkKey(r[0]))) return true;
+    if(ivFilter==="Pendentes") return !has; if(ivFilter==="Conferidos") return has; if(ivFilter==="Não encontrados") return has && ST_CAT[m.s]==="Não encontrado"; if(ivFilter==="Etiquetas") return has && !!ST_ETQ[m.s]; return true; });
+  const ro = false;
+  $("#iv-items").innerHTML = list.slice(0,ivShow).map(r=>{ const m=markOf(iv,r); const has=!(m.s===undefined||m.s===null||m.s===""); const st=has?STATUS[m.s]:null;
+    return `<div class="card item" data-k="${esc(mkKey(r[0]))}" style="gap:10px;${has?`border-left:6px solid var(${ST_CAT[m.s]==="Não encontrado"?"--bad":ST_ETQ[m.s]?"--warn":"--ok"})`:""}">
+      <div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div style="min-width:0"><p style="font-weight:800;font-variant-numeric:tabular-nums">${esc(r[0])}</p><p>${esc(r[1])}</p><p class="small muted">${esc(r[4])} • ${brl(r[7])} • ${esc(r[8])}</p></div>${has?`<span class="pill ${ST_CAT[m.s]==="Não encontrado"?"p-bad":ST_ETQ[m.s]?"p-warn":"p-ok"}">${esc(st[0])}</span>`:`<span class="pill p-mut">Pendente</span>`}</div>
+      <div class="chips">${QUICK.map(([i,l])=>`<button type="button" class="chip" data-s="${i}" aria-pressed="${has&&m.s===i}">${l}</button>`).join("")}<select class="f" data-more aria-label="Outros status" style="width:auto;flex:0 1 230px"><option value="">Outros…</option>${STATUS.map((x,i)=>`<option value="${i}" ${has&&m.s===i?"selected":""}>${esc(x[0])}</option>`).join("")}</select>${has?`<button type="button" class="chip" data-s="">Desfazer</button>`:""}</div>
+      ${has?`<p class="small"><b>Ação:</b> ${esc(st[1])} • <b>Formulário:</b> ${esc(st[2])}${st[3]?` • <b>FOR.AI.02:</b> ${st[3]}`:""}</p>
+      <div class="grid g3" style="gap:10px">
+        ${m.s===4?`<label class="fl">Dependência encontrada<input class="f" data-fld="d" list="iv-deps" value="${esc(m.d||"")}"></label>`:""}
+        <label class="fl">Estado de conservação<select class="f" data-fld="e"><option value=""></option>${ESTADOS.map(x=>`<option ${m.e===x?"selected":""}>${x}</option>`).join("")}</select></label>
+        <label class="fl">Observação<input class="f" data-fld="o" value="${esc(m.o||"")}" placeholder="${m.s===7?"Ex.: pesquisado com o diácono":""}"></label>
+      </div>`:""}
+    </div>`; }).join("") || `<p class="muted">Nenhum bem com esse filtro.${ivFilter==="Pendentes"&&items.length?" Todos os bens desta seleção já foram conferidos.":""}</p>`;
+  if(!list.length && q){ const R=curRows().filter(r=>r[2]!==IVLOC && codeMatches(r,$("#iv-q").value)); if(R.length){ $("#iv-items").innerHTML = `<div class="notice"><b>Não há “${esc($("#iv-q").value)}” nesta igreja.</b> Encontrei em: ${[...new Set(R.map(r=>r[2]))].slice(0,8).map(l=>esc(l)).join(", ")}${R.length>8?"…":""}. Use “Localizar bem pelo número do cadastro”, acima, para ver os detalhes e registrar onde o bem está.</div>`; } }
+  $("#iv-more").hidden = list.length<=ivShow; $("#iv-more").textContent=`Mostrar mais (${list.length-ivShow} restantes)`;
+}
+function setMark(k, patch){
+  const iv=invOf(IVLOC); const r=itemsOf(IVLOC).find(x=>mkKey(x[0])===k); if(!r) return;
+  if(patch.s===""){ delete iv.marks[k]; }
+  else { const m=iv.marks[k]||{}; Object.assign(m, patch, {t:TODAY}); iv.marks[k]=m; }
+  ivKeep.add(k); queueSave(IVLOC);
+}
+$("#iv-items").addEventListener("click",e=>{ const b=e.target.closest("[data-s]"); if(!b) return; const k=b.closest("[data-k]").dataset.k; setMark(k,{s: b.dataset.s===""?"":Number(b.dataset.s)}); renderAllSoft(); });
+$("#iv-items").addEventListener("change",e=>{ const card=e.target.closest("[data-k]"); if(!card) return; const k=card.dataset.k;
+  if(e.target.matches("[data-more]")){ if(e.target.value!=="") { setMark(k,{s:Number(e.target.value)}); renderItems.force=true; renderAllSoft(); } return; }
+  const f=e.target.dataset.fld; if(f){ setMark(k,{[f]:e.target.value}); }
+});
+function renderAllSoft(){ renderInv(); renderHomeKpis(); renderCrono(); }
+function renderEtq(items, iv){
+  const L = items.filter(r=>{ const m=markOf(iv,r); return m.s!==undefined && ST_ETQ[m.s]; });
+  $("#iv-etq").innerHTML = L.map(r=>{ const m=markOf(iv,r); return `<tr><td style="white-space:nowrap">${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(m.d||r[4])}</td><td>${esc(STATUS[m.s][0])}</td></tr>`; }).join("") || `<tr><td colspan="4" class="muted">Nenhuma etiqueta a imprimir até agora.</td></tr>`;
+}
+function divRows(items, iv){
+  const out=[];
+  items.forEach(r=>{ const m=markOf(iv,r); if(m.s===undefined||!STATUS[m.s]||!STATUS[m.s][3]) return;
+    out.push([r[0], STATUS[m.s][3], `${r[1]} | Sistema: ${r[4]} | ${STATUS[m.s][0]}${m.d?` | Encontrado em: ${m.d}`:""}${m.o?` | Obs.: ${m.o}`:""}`]); });
+  (iv.nc||[]).forEach(x=>out.push([x.etq||"SEM ETIQUETA","02",`${x.desc}${x.marca?` – ${x.marca}`:""} | Local: ${x.dep||"—"} | Qtde: ${x.qtd||1}${x.orig?` | Origem: ${x.orig}`:""}${x.obs?` | Obs.: ${x.obs}`:""}`]));
+  return out.sort((a,b)=>a[1].localeCompare(b[1]));
+}
+function renderDiv(items, iv){
+  $("#iv-div").innerHTML = divRows(items,iv).map(d=>`<tr><td style="white-space:nowrap">${esc(d[0])}</td><td>${esc(d[1])}</td><td>${esc(d[2])}</td></tr>`).join("") || `<tr><td colspan="3" class="muted">Nenhuma divergência registrada.</td></tr>`;
+}
+function renderNc(iv){
+  $("#nc-list").innerHTML = (iv.nc||[]).map((x,i)=>`<tr><td>${esc(x.desc)}${x.marca?`<br><span class="small muted">${esc(x.marca)}</span>`:""}${x.obs?`<br><span class="small muted">${esc(x.obs)}</span>`:""}</td><td>${esc(x.dep||"—")}</td><td class="num">${esc(x.qtd||1)}</td><td>${esc(x.etq||"Sem etiqueta")}</td><td>${esc(x.orig||"")}</td><td><button type="button" class="btn" data-del="${i}" style="padding:6px 10px">Remover</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">Nenhum bem registrado.</td></tr>`;
+}
+$("#nc-form").addEventListener("submit",e=>{ e.preventDefault(); if(!IVLOC) return; const fd=new FormData(e.target); const x={}; ["desc","marca","dep","qtd","etq","orig","obs"].forEach(k=>x[k]=(fd.get(k)||"").toString().trim()); if(!x.desc) return; x.qtd=Math.max(1,Math.round(Number(x.qtd)||1)); x.t=TODAY; const iv=invOf(IVLOC); iv.nc=[...(iv.nc||[]),x]; queueSave(IVLOC); e.target.reset(); $("#nc-qtd").value=1; toast("Bem registrado"); renderAllSoft(); });
+$("#nc-list").addEventListener("click",e=>{ const b=e.target.closest("[data-del]"); if(!b) return; const iv=invOf(IVLOC); iv.nc=(iv.nc||[]).filter((_,i)=>i!==+b.dataset.del); queueSave(IVLOC); renderAllSoft(); });
+function sheetName(s){ return s.replace(/[\\/?*\[\]:]/g,"-").slice(0,31); }
+async function exportWorkbook(locs, fname){
+  if(!locs.length){ toast("Carregue o relatório do SIGA antes de baixar"); return; }
+  if(!DL){ toast("Download indisponível nesta visualização"); return; }
+  try{
+    await loadSheetJS(); const D=cur(); const multi=locs.length>1;
+    const L0 = multi ? ["Localidade"] : [];
+    const res=[["Localidade","Casa de Oração","Bens","Vl. atual (R$)","Conferidos","% conferido","Pendentes","Não encontrados","Etiquetas a imprimir","Não cadastrados","Status","Responsável","Início previsto","Término previsto","Início real","Término real"]];
+    const inv=[[...L0,"Código","Descrição do bem","Dependência (SIGA)","Conta","Vl. aquisição","Vl. atual","Situação contábil","Status do inventário","Dependência encontrada","Estado de conservação","Observação","Data da conferência","Ação necessária","Formulário","Cód. FOR.AI.02"]];
+    const etq=[[...L0,"Código","Descrição","Dependência","Motivo"]];
+    const div=[[...L0,"Código da etiqueta","Código da divergência","Descrição da divergência"]];
+    const nc=[[...L0,"Descrição","Marca/modelo","Dependência","Quantidade","Nº etiqueta","Origem provável","Observação","Data"]];
+    locs.forEach(loc=>{
+      const L=D.locs.find(x=>x.loc===loc); const items=itemsOf(loc), iv=invOf(loc); const p=(D.prog||{})[docId(loc)]||{};
+      const r=rowState(L,D); const s=invStats(loc,curInv())||{conf:0,nf:0,etq:0,nc:0}; const pre = multi?[loc]:[];
+      res.push([loc,p.nome||"",items.length,L.vat,s.conf,items.length? s.conf/items.length:0,Math.max(0,items.length-s.conf),s.nf,s.etq,s.nc,r.st,p.resp||"",fmtD(p.inicioPrev).replace("—",""),fmtD(r.tPrev).replace("—",""),fmtD(p.inicioReal).replace("—",""),fmtD(p.terminoReal).replace("—","")]);
+      items.forEach(x=>{ const m=markOf(iv,x); const st=m.s!==undefined&&STATUS[m.s]?STATUS[m.s]:null; inv.push([...pre,x[0],x[1],x[4],x[3],x[5],x[7],x[8],st?st[0]:"",m.d||"",m.e||"",m.o||"",m.t?fmtD(m.t):"",st?st[1]:"PENDENTE",st?st[2]:"",st?st[3]:""]); if(st && ST_ETQ[m.s]) etq.push([...pre,x[0],x[1],m.d||x[4],st[0]]); });
+      divRows(items,iv).forEach(d=>div.push([...pre,...d]));
+      (iv.nc||[]).forEach(x=>nc.push([...pre,x.desc,x.marca,x.dep,x.qtd,x.etq,x.orig,x.obs,x.t?fmtD(x.t):""]));
+    });
+    const wb=XLSX.utils.book_new();
+    const add=(n,a,wide)=>{ const ws=XLSX.utils.aoa_to_sheet(a); ws["!cols"]=a[0].map((h,i)=>({wch: wide.includes(i)?48:Math.max(12,String(h).length+2)})); ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{c:0,r:0},e:{c:a[0].length-1,r:Math.max(0,a.length-1)}})}; XLSX.utils.book_append_sheet(wb,ws,sheetName(n)); return ws; };
+    const o=multi?1:0;
+    const wr=add("Resumo",res,[1]); for(let i=1;i<res.length;i++){ const c=wr[XLSX.utils.encode_cell({r:i,c:5})]; if(c) c.z="0.0%"; const v=wr[XLSX.utils.encode_cell({r:i,c:3})]; if(v) v.z="#,##0.00"; }
+    add("Inventário",inv,[1+o,10+o,12+o]); add("Etiquetas",etq,[1+o]); add("FOR.AI.02",div,[2+o]); add("Não cadastrados",nc,[0+o,6+o]);
+    wb.Props={Title:"Inventário de bens móveis", Subject: D.fonte||""};
+    const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
+    await DL.save({filename: fname.replace(/[\\/:*?"<>|]/g,"-")+".xlsx", data:buf});
+  }catch(err){ if(err?.code==="declined") return; toast(err?.message==="lib" ? "Não foi possível carregar o gerador de planilhas" : "Não foi possível gerar a planilha"); }
+}
+$("#iv-xlsx").addEventListener("click",()=>{ if(IVLOC) exportWorkbook([IVLOC], `Inventario ${IVLOC} ${TODAY}`); });
+$("#iv-xlsx-all").addEventListener("click",()=>exportWorkbook(cur().locs.map(l=>l.loc), `Inventario completo ${TODAY}`));
+$("#crono-xlsx").addEventListener("click",()=>exportWorkbook(cur().locs.map(l=>l.loc), `Inventario completo ${TODAY}`));
+
+/* ---------- localizar bem em todas as localidades ---------- */
+function codeMatches(r, q){
+  const raw=q.trim(); if(!raw) return false;
+  const code=String(r[0]); const nq=norm(raw).replace(/\s+/g,""); const nc=norm(code).replace(/\s+/g,"");
+  if(nc.includes(nq)) return true;
+  const qd=raw.replace(/\D/g,""); if(qd && qd.length===raw.replace(/\s/g,"").length){ const num=(code.split("/")[1]||"").replace(/\D/g,""); if(num && Number(num)===Number(qd)) return true; }
+  return raw.length>=3 && norm(r[1]).includes(norm(raw));
+}
+function findAll(q){ const qd=q.replace(/\D/g,""); const ex=r=>{ const num=(String(r[0]).split("/")[1]||"").replace(/\D/g,""); return qd && num && Number(num)===Number(qd) ? 0 : 1; }; return curRows().filter(r=>codeMatches(r,q)).sort((a,b)=>ex(a)-ex(b)); }
+function markLabel(r){ const iv=curInv()[docId(r[2])]; const m=iv&&iv.marks[mkKey(r[0])]; return m&&m.s!==undefined&&STATUS[m.s]? STATUS[m.s][0] : "Pendente"; }
+function renderFind(){
+  const q=$("#iv-find").value; const msg=$("#iv-find-msg"), wrap=$("#iv-find-wrap");
+  if(q.trim().length<2){ msg.textContent=""; wrap.hidden=true; return; }
+  if(!curRows().length){ msg.textContent="Carregando a lista de bens…"; wrap.hidden=true; return; }
+  const R=findAll(q); const D=cur();
+  if(!R.length){ msg.innerHTML=`<b>Nenhum bem com “${esc(q)}” no relatório.</b> Se o bem está fisicamente na igreja, registre em “Não cadastrados” (FOR.AI.02, código 02) e não reaproveite a numeração.`; wrap.hidden=true; return; }
+  const locs=[...new Set(R.map(r=>r[2]))];
+  msg.textContent = `${NUM.format(R.length)} bem(ns) em ${locs.length} localidade(s)${R.length>60?" — mostrando os 60 primeiros; digite mais do número para afinar":""}.`;
+  wrap.hidden=false;
+  $("#iv-find-r").innerHTML = R.slice(0,60).map(r=>{ const nm=((D.prog||{})[docId(r[2])]||{}).nome; const other = IVLOC && r[2]!==IVLOC;
+    return `<tr><td style="white-space:nowrap"><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td style="white-space:nowrap">${esc(r[2])}${nm?`<br><span class="small muted">${esc(nm)}</span>`:""}</td><td>${esc(r[4])}</td><td>${esc(markLabel(r))}</td><td><div class="row" style="gap:6px;flex-wrap:nowrap"><button type="button" class="btn" data-open="${esc(r[0])}" style="padding:6px 10px">Abrir</button>${other?`<button type="button" class="btn" data-here="${esc(r[0])}" style="padding:6px 10px" title="Marca o bem na igreja de origem como encontrado em ${esc(IVLOC)}">Achei em ${esc(IVLOC.replace(/^BR /,""))}</button>`:""}</div></td></tr>`; }).join("");
+}
+$("#iv-find").addEventListener("input",()=>{ clearTimeout(renderFind._t); renderFind._t=setTimeout(renderFind,200); });
+$("#iv-find-r").addEventListener("click",e=>{
+  const o=e.target.closest("[data-open]"), h=e.target.closest("[data-here]");
+  if(o){ const r=curRows().find(x=>x[0]===o.dataset.open); if(!r) return; openInv(r[2]); ivFilter="Todos"; $("#iv-q").value=r[0]; renderInv(); return; }
+  if(h){ const r=curRows().find(x=>x[0]===h.dataset.here); if(!r||!IVLOC) return; const here=IVLOC; const k=mkKey(r[0]);
+    const iv=invOf(r[2]); iv.marks[k]=Object.assign(iv.marks[k]||{}, {s:4, d:`Localidade ${here}`, o:`Encontrado durante o inventário de ${here}. Verificar transferência (14.3 na origem e 14.2 no destino).`, t:TODAY});
+    const prev=IVLOC; IVLOC=r[2]; queueSave(r[2]); IVLOC=prev;
+    toast(`Registrado em ${r[2]}: encontrado em ${here}`); renderFind(); renderAllSoft(); }
+});
+/* ---------- materiais para baixar ---------- */
+const PLANILHA_URL = "https://acgouveavieira-my.sharepoint.com/:x:/g/personal/consultoria_acgouveavieira_com_br/IQAkNbeq1JbgT6nXim7FW5ZaAe6YTBpwLPGFCcReTL_Qwjc?e=0JXEL8";  // link de compartilhamento (OneDrive/Google Drive) da planilha modelo
+const MATS = [
+ ["Formularios_Secao14_todos","Formulários da Seção 14 – todos","FOR.AI.01, FOR.AI.02 e 14.2 a 14.9 em um único PDF para imprimir (13 páginas).","Formulários Seção 14 - FOR.AI.01, FOR.AI.02 e 14.2 a 14.9.pdf"],
+ ["Resumo_Checklist_Manual14","Resumo do Manual 14 – checklist","3 páginas para levar em mãos: regra central, formulários, checklist do inventário e espaço para anotações.","Resumo Manual 14 e Formulários - Checklist.pdf"],
+ ["Guia_Rapido_Preenchimento","Guia rápido de preenchimento","2 páginas: os 10 formulários com quando usar, como preencher, quem assina e o que anexar.","Guia Rápido de Preenchimento - Manual 14.pdf"],
+ ["Guia_Preenchimento_Formularios","Guia de preenchimento dos formulários","11 páginas: o que entregar e, para cada formulário, o modelo reduzido com o passo a passo de preenchimento.","Guia de Preenchimento dos Formulários - Manual 14.pdf"],
+ ["Apresentacao_Treinamento_Manual14","Apresentação do treinamento","Os 44 slides do treinamento do Manual 14 em PDF.","Treinamento Patrimônio – Bens Móveis (Manual 14).pdf"],
+ ["Manual_Secao14_Patrimonio_Bens_Moveis","Manual Administrativo – Seção 14","Texto completo da Seção 14 – Patrimônio, Bens Móveis (46 páginas).","Seção 14 - Patrimônio Bens Móveis.pdf"],
+ ["Resumo_Pratico","Resumo prático do colaborador","Manual rápido: o que inventariar, regra de ouro, divergências, etiquetas e checklist.","Resumo Prático - Ativo Imobilizado.pdf"]
+];
+$("#mat-grid").innerHTML = MATS.map(([k,t,d])=>`<div class="card formcard"><div class="thumb" ${k.startsWith("Apresentacao")?'style="background:#0E1626;display:flex;align-items:center"':""}><img src="mat/${k}.jpg" alt="Capa: ${esc(t)}" loading="lazy" ${k.startsWith("Apresentacao")?'style="object-fit:contain;height:auto"':""}></div><span class="code" style="font-size:19px">${esc(t)}</span><span class="small muted">${esc(d)}</span><button type="button" class="btn primary" data-mat="${k}" style="align-self:flex-start">Baixar PDF</button></div>`).join("");
+$("#mat-grid").addEventListener("click",e=>{ const b=e.target.closest("[data-mat]"); if(!b) return; const m=MATS.find(x=>x[0]===b.dataset.mat); download("files/"+m[0]+".pdf", m[3]); });
+$("#mat-plan-act").innerHTML = PLANILHA_URL ? `<a class="btn primary" href="${esc(PLANILHA_URL)}" target="_blank" rel="noopener">Baixar a planilha (.xlsx)</a>` : "";
+$("#mat-plan-msg").textContent = PLANILHA_URL ? "Abre o arquivo no OneDrive em outra aba. Para salvar no computador: Arquivo › Salvar como › Baixar uma cópia. Use sempre uma cópia nova para cada Casa de Oração." : "Disponível em breve. Enquanto isso, peça a planilha ao Responsável pelo Imobilizado.";
+
+/* ---------- apresentação ---------- */
+const SECS={1:"Abertura",4:"Conversa inicial",11:"Conceitos",15:"Formulários e rotina",24:"Intervalo",25:"Inventário na prática",35:"Gestão com propósito",42:"Encerramento"};
+let SI=0, notesOn=true;
+function slideTitle(s){ const l=(s.notes||"").replace(/^\d+:\d+\s*[–-]\s*/,""); return l.split(/[.:]/)[0].slice(0,70); }
+$("#sl-thumbs").innerHTML = SLIDES.map((s,i)=>`${SECS[s.n]?`<p class="sec">${SECS[s.n]}</p>`:""}<button type="button" data-s="${i}"><img src="slides/${s.img}" alt="" loading="lazy"><span>${s.n}. ${esc(s.title||slideTitle(s))}</span></button>`).join("");
+function goSlide(i){
+  SI=Math.max(0,Math.min(SLIDES.length-1,i)); const s=SLIDES[SI];
+  $("#sl-img").src="slides/"+s.img; $("#sl-img").alt=`Slide ${s.n} de ${SLIDES.length}`;
+  $("#sl-count").textContent=`${s.n} / ${SLIDES.length}`; $("#sl-notes").textContent=s.notes||"Sem notas neste slide."; $("#sl-notes").hidden=!notesOn;
+  $("#sl-prev").disabled=SI===0; $("#sl-next").disabled=SI===SLIDES.length-1;
+  document.querySelectorAll("#sl-thumbs button").forEach(b=>b.setAttribute("aria-current", +b.dataset.s===SI));
+  const cur=$(`#sl-thumbs button[data-s="${SI}"]`); if(cur && !$("#v-apresentacao").hidden) cur.scrollIntoView({block:"nearest"});
+  $("#pr-img").src="slides/"+s.img; $("#pr-img").alt=$("#sl-img").alt; $("#pr-count").textContent=`${s.n} / ${SLIDES.length}`;
+  [SI+1,SI+2].forEach(k=>{ if(SLIDES[k]){ const im=new Image(); im.src="slides/"+SLIDES[k].img; } });
+}
+$("#sl-thumbs").addEventListener("click",e=>{ const b=e.target.closest("[data-s]"); if(b) goSlide(+b.dataset.s); });
+$("#sl-prev").addEventListener("click",()=>goSlide(SI-1)); $("#sl-next").addEventListener("click",()=>goSlide(SI+1));
+$("#pr-prev").addEventListener("click",()=>goSlide(SI-1)); $("#pr-next").addEventListener("click",()=>goSlide(SI+1));
+$("#sl-notes-t").addEventListener("click",e=>{ notesOn=!notesOn; e.currentTarget.textContent=notesOn?"Ocultar notas":"Mostrar notas"; e.currentTarget.setAttribute("aria-pressed",notesOn); goSlide(SI); });
+$("#sl-pdf").addEventListener("click",()=>download("files/Apresentacao_Treinamento_Manual14.pdf","Treinamento Patrimônio – Bens Móveis (Manual 14).pdf"));
+function presentOn(){ const p=$("#present"); p.hidden=false; try{ p.requestFullscreen?.().catch(()=>{}); }catch(e){} $("#pr-next").focus(); }
+function presentOff(){ $("#present").hidden=true; try{ if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }catch(e){} }
+$("#sl-present").addEventListener("click",presentOn); $("#pr-exit").addEventListener("click",presentOff);
+$("#present").addEventListener("click",e=>{ if(e.target.id==="pr-img") goSlide(SI+1); });
+document.addEventListener("fullscreenchange",()=>{ if(!document.fullscreenElement && !$("#present").hidden) $("#present").hidden=true; });
+document.addEventListener("keydown",e=>{
+  const pres=!$("#present").hidden; const onDeck=!$("#v-apresentacao").hidden && $("#ov").hidden;
+  if(!pres && !onDeck) return; if(["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName)) return;
+  if(["ArrowRight","PageDown"," "].includes(e.key)){ e.preventDefault(); goSlide(SI+1); }
+  else if(["ArrowLeft","PageUp"].includes(e.key)){ e.preventDefault(); goSlide(SI-1); }
+  else if(e.key==="Escape" && pres) presentOff();
+  else if((e.key==="f"||e.key==="F") && !pres) presentOn();
+});
+goSlide(0);
+
+/* ---------- formulários ---------- */
+const FORM_LIST=[
+ ["forai01","FOR.AI.01","Declaração de doação de bens móveis e materiais","Novo – substitui o 14.1","p-ok","Doação de bem móvel ou de materiais. Marque o tipo, o tempo de uso (até 5 anos ou mais de 5, com ou sem NF), os dados do doador e do cônjuge. O Termo de Aceite é assinado pelo Administrador ou Assessor.","FOR.AI.01.pdf"],
+ ["forai02","FOR.AI.02","Divergências do inventário de bens móveis e imóveis","Novo","p-ok","Registra cada divergência do inventário com o código da etiqueta e o código 01 a 04. Assinam Ancião/Diácono, Cooperador do Ofício Ministerial e Responsável pelo Imobilizado.","FOR.AI.02.pdf"],
+ ["f142","14.2","Ocorrência de entrada de bens móveis","Vigente","p-info","Entrada por compra, transferência recebida ou doação (com FOR.AI.01).","14.2.pdf"],
+ ["f143","14.3","Declaração de saída de bens móveis","Vigente","p-info","Saída por transferência, venda, crime, perda/extravio ou obsolescência. Baixa só com aprovação e data da reunião.","14.3.pdf"],
+ ["f144","14.4","Declaração de retirada de bem","Vigente","p-info","Retirada do bem, sempre que possível com este formulário.","14.4.pdf"],
+ ["f145","14.5","Ata de inventário de bens móveis","Vigente","p-info","Encerra o inventário: aposição de etiquetas, conferência física e ocorrências relevantes, com assinaturas.","14.5.pdf"],
+ ["f146","14.6","Alteração de cadastro de bem","Vigente","p-info","Corrige descrição ou localização (dependência) de um bem cadastrado.","14.6.pdf"],
+ ["f147","14.7","Movimentação interna de bem","Vigente","p-info","Saída temporária: manutenção, empréstimo, troca ou guarda provisória. Não é baixa.","14.7.pdf"],
+ ["f148","14.8","Movimento mensal de bem","Vigente","p-info","Consolida todas as ocorrências do mês, inclusive as que têm documento pendente.","14.8.pdf"],
+ ["f149","14.9","Folder etiquetas de bens móveis","Vigente","p-info","Etiquetas patrimoniais: impressão e reimpressão.","14.9.pdf"],
+ ["f141","14.1","Declaração de doação de bem móvel","Substituído – não usar","p-bad","Substituído pelo FOR.AI.01. Mantido aqui apenas para consulta.","14.1.pdf"],
+ ["resumo","Resumo","Resumo prático – manual rápido do colaborador","Apoio","p-mut","O que inventariar, como conferir, regra de ouro, divergências, etiquetas e checklist.","Resumo_Pratico.pdf"]
+];
+const fname = f => `${f[1]} - ${f[2]}.pdf`.replace(/[\\/:*?"<>|]/g,"-");
+function renderForms(){
+  $("#forms-grid").innerHTML = FORM_LIST.map(f=>{ const [k,code,name,badge,cls,when]=f; return `<div class="card formcard"><button type="button" class="thumb" data-form="${k}" style="padding:0;cursor:pointer" aria-label="Ver o formulário ${esc(code)}"><img src="forms/${FORMS[k].pages[0]}" alt="Primeira página do formulário ${esc(code)}" loading="lazy"></button><span class="pill ${cls}" style="align-self:flex-start">${esc(badge)}</span><span class="code">${esc(code)}</span><span style="font-weight:700">${esc(name)}</span><span class="small muted">${esc(when)}</span><div class="row" style="gap:8px;margin-top:auto"><button type="button" class="btn primary" data-dlf="${k}">Baixar PDF</button><button type="button" class="btn" data-form="${k}">Ver</button></div></div>`; }).join("");
+}
+$("#forms-grid").addEventListener("click",e=>{ const d=e.target.closest("[data-dlf]"); if(d){ const f=FORM_LIST.find(x=>x[0]===d.dataset.dlf); download("files/"+f[6], fname(f)); return; } const b=e.target.closest("[data-form]"); if(b) openForm(b.dataset.form); });
+$("#forms-all").addEventListener("click",()=>download("files/Formularios_Secao14_todos.pdf","Formulários Seção 14 - FOR.AI.01, FOR.AI.02 e 14.2 a 14.9.pdf"));
+function openForm(k, hl){
+  const f=FORM_LIST.find(x=>x[0]===k); const m=FORMS[k]; const ov=$("#ov");
+  ov.innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="mh"><div><p class="eyebrow">${esc(f[3])}</p><h2 id="mt">${esc(f[1])} – ${esc(f[2])}</h2></div><div class="row"><button class="btn" type="button" data-dl="${esc(f[6])}">Baixar PDF</button><button class="btn" type="button" data-close>Fechar</button></div></div><div class="mb"><p>${esc(f[5])}</p>${m.pages.map((p,i)=>`<img class="page" src="forms/${p}" alt="${esc(f[1])}, página ${i+1}">`).join("")}</div></div>`;
+  ov.hidden=false; ov.querySelector("[data-close]").focus();
+  ov.querySelector("[data-dl]").addEventListener("click",()=>download("files/"+f[6], fname(f)));
+}
+function directOpen(url, name){
+  try{ const a=document.createElement("a"); a.href=new URL(url, location.href).href; a.download=name; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove(); return true; }catch(e){ return false; }
+}
+async function download(url, name, msgEl){
+  if(!window.claude){ const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); return; }
+  if(DL){
+    try{ const r=await fetch(url); if(!r.ok) throw 0; await DL.save({filename:name, data: await r.blob()}); return; }
+    catch(err){ if(err?.code==="declined"){ toast("Download recusado — abrindo o PDF em nova aba"); } }
+  }
+  if(directOpen(url,name)){ toast("Abrindo o PDF… se não baixar, use Salvar/Compartilhar do navegador"); if(msgEl) msgEl.textContent=""; }
+  else { toast("Não foi possível baixar o arquivo"); if(msgEl) msgEl.textContent="Não foi possível baixar. Tente pelo computador."; }
+}
+$("#status-table").innerHTML = STATUS.map(s=>`<tr><td><b>${esc(s[0])}</b></td><td>${esc(s[1])}</td><td>${esc(s[2])}</td><td>${s[3]||"—"}</td></tr>`).join("");
+
+/* ---------- manual ---------- */
+let MANUAL=null, manualTried=false, manualPage=0, manualTerm="";
+async function loadManual(){ if(manualTried) return MANUAL; manualTried=true; try{ const r=await fetch("manual/manual.json"); if(r.ok) MANUAL=await r.json(); }catch(e){} return MANUAL; }
+async function renderManual(){
+  const box=$("#manual-box"); await loadManual();
+  if(!MANUAL){
+    box.innerHTML = `<div class="notice"><b>O texto completo do Manual (Seção 14) ainda está sendo incluído no portal.</b> Enquanto isso, consulte o Resumo prático abaixo.</div><div class="grid g3" style="margin-top:16px">${FORMS.resumo.pages.map((p,i)=>`<img class="page" style="width:100%;border:1px solid var(--line);border-radius:8px;background:#fff" src="forms/${p}" alt="Resumo prático, página ${i+1}">`).join("")}</div>`;
+    return;
+  }
+  const t=norm(manualTerm);
+  const hits = t? MANUAL.pages.map((p,i)=>[i,(norm(p.text).split(t).length-1)]).filter(x=>x[1]>0) : [];
+  box.innerHTML = `<div class="split"><div class="card" style="gap:12px"><input class="f" type="search" id="mq" placeholder="Buscar no manual…" value="${esc(manualTerm)}" aria-label="Buscar no manual"><p class="small muted">${t? `${hits.length} página(s) com “${esc(manualTerm)}”` : `${MANUAL.pages.length} páginas`}</p><div class="pagelist" id="plist">${(t? hits.map(h=>h[0]) : MANUAL.pages.map((_,i)=>i)).map(i=>`<button type="button" data-p="${i}" aria-current="${i===manualPage}">Página ${MANUAL.pages[i].n}${MANUAL.pages[i].title?` – ${esc(MANUAL.pages[i].title)}`:""}${t?` <span class="pill p-warn">${hits.find(h=>h[0]===i)[1]}</span>`:""}</button>`).join("")}</div></div>
+  <div class="card" style="gap:14px"><div class="row" style="justify-content:space-between"><h3>Página ${MANUAL.pages[manualPage].n}</h3><div class="row"><button class="btn" type="button" id="pprev" ${manualPage===0?"disabled":""}>‹ Anterior</button><button class="btn" type="button" id="pnext" ${manualPage===MANUAL.pages.length-1?"disabled":""}>Próxima ›</button></div></div>
+  ${t && norm(MANUAL.pages[manualPage].text).includes(t) ? `<div class="pagetext">${hl(MANUAL.pages[manualPage].text, manualTerm)}</div>`:""}
+  <img class="page" style="width:100%;border:1px solid var(--line);border-radius:8px;background:#fff" src="manual/${MANUAL.pages[manualPage].img}" alt="Manual, Seção 14, página ${MANUAL.pages[manualPage].n}"></div></div>`;
+  const mq=$("#mq"); mq.addEventListener("input",()=>{ manualTerm=mq.value; clearTimeout(renderManual._t); renderManual._t=setTimeout(()=>{ const pos=mq.selectionStart; renderManual().then(()=>{ const n=$("#mq"); n.focus(); n.setSelectionRange(pos,pos); }); },250); });
+  $("#plist").addEventListener("click",e=>{ const b=e.target.closest("[data-p]"); if(b){ manualPage=+b.dataset.p; renderManual(); } });
+  $("#pprev").addEventListener("click",()=>{ manualPage--; renderManual(); }); $("#pnext").addEventListener("click",()=>{ manualPage++; renderManual(); });
+}
+function hl(text, term){ const t=norm(term); if(!t) return esc(text); const nt=norm(text); let out="", i=0, j; while((j=nt.indexOf(t,i))>=0){ out+=esc(text.slice(i,j))+"<mark>"+esc(text.slice(j,j+t.length))+"</mark>"; i=j+t.length; } return out+esc(text.slice(i)); }
+
+/* ---------- busca global ---------- */
+function snippet(text, term){ const nt=norm(text), t=norm(term); const j=nt.indexOf(t); if(j<0) return ""; const a=Math.max(0,j-90), b=Math.min(text.length,j+t.length+120); return (a>0?"…":"")+hl(text.slice(a,b).replace(/\s+/g," "),term)+(b<text.length?"…":""); }
+async function search(term){
+  const t=norm(term).trim(); if(t.length<2){ show(location.hash.slice(1)||"inicio"); return; }
+  await loadManual(); const R=[];
+  if(MANUAL) MANUAL.pages.forEach((p,i)=>{ if(norm(p.text).includes(t)) R.push({w:`Manual • página ${p.n}`, s:snippet(p.text,term), go:()=>{ manualPage=i; manualTerm=term; location.hash="manual"; show("manual"); }}); });
+  FORM_LIST.forEach(f=>{ const tx=FORMS[f[0]].text+" "+f[2]+" "+f[5]; if(norm(tx).includes(t)) R.push({w:`Formulário ${f[1]}`, s:snippet(norm(f[2]+" "+f[5]).includes(t)? f[2]+" — "+f[5] : FORMS[f[0]].text, term), go:()=>openForm(f[0])}); });
+  document.querySelectorAll("[data-search]").forEach(el=>{ const tx=el.textContent; if(norm(tx).includes(t)) R.push({w:el.dataset.search, s:snippet(tx,term), go:()=>{ location.hash="planilha"; show("planilha"); el.scrollIntoView({block:"start"}); }}); });
+  cur().locs.forEach(L=>{ const nm=((cur().prog||{})[docId(L.loc)]||{}).nome||""; if(norm(L.loc+" "+nm).includes(t)) R.push({w:"Cronograma • localidade", s:esc(`${L.loc}${nm?" – "+nm:""} • ${NUM.format(L.bens)} bens • ${brl(L.vat)}`), go:()=>{ location.hash="cronograma"; show("cronograma"); openLoc(L.loc); }}); });
+  VIEWS.forEach(x=>{ const el=$("#v-"+x); if(el) el.hidden = x!=="busca"; });
+  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current","false"));
+  $("#busca-t").textContent = `${R.length} resultado(s) para “${term}”`;
+  $("#busca-r").innerHTML = R.length? R.slice(0,80).map((r,i)=>`<button type="button" class="hit" data-i="${i}"><span class="where">${esc(r.w)}</span><span>${r.s}</span></button>`).join("") : `<p class="muted">Nada encontrado. Tente outra palavra, como “doação”, “etiqueta”, “baixa” ou o nome da localidade.${MANUAL?"":" O texto completo do Manual ainda não foi incluído."}</p>`;
+  $("#busca-r").onclick=e=>{ const b=e.target.closest("[data-i]"); if(b) R[+b.dataset.i].go(); };
+}
+$("#q").addEventListener("input",e=>{ clearTimeout(search._t); search._t=setTimeout(()=>search(e.target.value),250); });
+$("#q").addEventListener("keydown",e=>{ if(e.key==="Escape"){ e.target.value=""; search(""); } });
+
+/* ---------- início ---------- */
+renderForms(); refreshAll();
+show(location.hash.slice(1)||"inicio");
+</script>
+
+</html>

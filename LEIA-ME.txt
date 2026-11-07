@@ -1,0 +1,10 @@
+Portal do Ativo Imobilizado - Manual 14 (versão para site)
+
+- index.html: o portal (abre direto no navegador).
+- files/: PDFs para download | forms/, manual/, slides/, mat/: imagens.
+- vercel.json: configuração para a Vercel.
+- As marcações de inventário ficam salvas no navegador de cada aparelho.
+  Use "Exportar planilha" como backup.
+
+Publicar na Vercel: vercel.com → Add New → Project → arraste esta pasta
+(ou ligue a um repositório do GitHub).
